@@ -1,0 +1,22 @@
+.circle {
+  position: absolute;
+  background-color: #54BE96;
+  border-radius: 50%;
+  opacity: 0.5;
+  pointer-events: none;
+  filter: blur(200px);
+}
+
+.modal-top-left {
+  top: -100px;
+  left: -100px;
+  width: 400px;
+  height: 400px;
+}
+
+.modal-bottom-right {
+  bottom: 100px;
+  right: 100px;
+  width: 400px;
+  height: 400px;
+}
