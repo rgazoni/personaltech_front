@@ -1,6 +1,6 @@
 const CurvedLine = () => {
   return (
-    <div className="w-1/3">
+    <div className="hidden lg:block md:block">
       <svg
         width="437"
         height="41"

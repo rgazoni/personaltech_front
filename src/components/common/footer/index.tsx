@@ -1,12 +1,12 @@
 
 export const Footer = () => {
   return (
-    <footer className="bg-footer-background -mx-16 -mb-8 pt-24 relative z-50">
-      <div className="px-16 py-8">
+    <footer className="bg-footer-background -mx-8 lg:-mx-16 -mb-8 pt-24 relative z-50">
+      <div className="lg:px-16 py-8 px-6">
         <h1 className="font-bold text-4xl text-primary">
           Personal<span className="font-light italic">tech</span>
         </h1>
-        <div className="flex justify-between">
+        <div className="flex flex-col gap-2 lg:flex-row justify-between">
           <h2 className="text-footer-background-foreground mt-2">
             © 2024 Personaltech. Todos os direitos reservados.
           </h2>

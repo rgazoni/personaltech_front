@@ -84,16 +84,3 @@
     }
   }
 
-  @layer components {
-
-    .circle {
-      position: absolute;
-      background-color: #54BE96;
-      border-radius: 50%;
-      opacity: 1;
-      pointer-events: none;
-      filter: blur(300px);
-      z-index: 0 !important;
-    }
-    
-  }

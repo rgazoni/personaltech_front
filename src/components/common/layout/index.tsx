@@ -9,7 +9,7 @@ type LayoutProps = {
 export const Layout = ({ children = <></> }: LayoutProps) => {
   return (
 
-    <div className="px-16">
+    <div className="lg:px-16 px-6">
       <Header />
       {children}
       <Footer />
