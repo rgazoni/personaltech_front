@@ -22,11 +22,21 @@ export const RatingCard = ({ trainer_rating }: RatingProps) => {
         <p className="font-semibold text-2xl text-secondary-foreground">{trainer_rating.name}</p>
         <p className="text-secondary-foreground font-extralight">{trainer_rating.profession}</p>
         <div className="flex gap-1 justify-center">
-          <Star size={16} fill="#FFC728" stroke="#FFC728" />
-          <Star size={16} fill="#FFC728" stroke="#FFC728" />
-          <Star size={16} fill="#FFC728" stroke="#FFC728" />
-          <Star size={16} fill="#FFC728" stroke="#FFC728" />
-          <Star size={16} fill="#FFC728" stroke="#FFC728" />
+          <Star size={16} fill={
+            trainer_rating.rating >= 1 ? "#FFC728" : "#E5E7EB"
+          } strokeWidth={0} />
+          <Star size={16} fill={
+            trainer_rating.rating >= 2 ? "#FFC728" : "#E5E7EB"
+          } strokeWidth={0} />
+          <Star size={16} fill={
+            trainer_rating.rating >= 3 ? "#FFC728" : "#E5E7EB"
+          } strokeWidth={0} />
+          <Star size={16} fill={
+            trainer_rating.rating >= 4 ? "#FFC728" : "#E5E7EB"
+          } strokeWidth={0} />
+          <Star size={16} fill={
+            trainer_rating.rating >= 5 ? "#FFC728" : "#E5E7EB"
+          } strokeWidth={0} />
         </div>
         <p className="text-muted-foreground text-sm">Avaliações de usuários</p>
         <Cta className="bg-footer-background py-5 px-6 hover:bg-footer-background">

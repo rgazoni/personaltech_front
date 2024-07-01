@@ -15,7 +15,7 @@ export const LandingPage = () => {
       <div className="absolute lp-circle lp-bottom-right"></div>
 
       <div className="flex justify-between gap-16 relative z-50 overflow-y-hidden">
-        <div className="lg:w-1/3 flex flex-col gap-6 overflow-y-hidden">
+        <div className="lg:w-1/3 flex flex-col gap-6">
           <h2
             className="font-bold text-5xl lg:text-6xl text-secondary w-full"
           >
@@ -39,7 +39,7 @@ export const LandingPage = () => {
         </div>
       </div>
 
-      <div className="my-40 bg-[#F9F8FE] -mx-6 lg:-mx-16 relative z-50">
+      <div className="mt-40 mb-32 lg:my-40 bg-[#F9F8FE] -mx-6 lg:-mx-16 relative z-50">
         <div className="lg:mx-16 px-6">
           <div className="block lg:flex py-14 justify-between gap-10">
             <div className="lg:w-1/2 flex flex-col justify-between gap-10 lg:gap-0 pb-10 lg:pb-0">
@@ -81,7 +81,7 @@ export const LandingPage = () => {
 
 
       <div className="flex flex-col items-center relative z-50">
-        <p className="text-2xl lg:text-4xl text-center leading-relaxed w-4/6">
+        <p className="text-2xl lg:text-4xl text-center leading-relaxed lg:w-4/6">
           Mais de 5000 pessoas já encontraram ser personal através do Personal
           <span className="font-light italic">tech</span>.
         </p>
@@ -90,7 +90,7 @@ export const LandingPage = () => {
         </Cta>
       </div>
 
-      <div className="my-44 flex gap-0 lg:gap-20 relative z-50">
+      <div className="my-32 lg:my-44 flex gap-0 lg:gap-20 relative z-50">
         <div className="lg:w-1/2 flex flex-col gap-10">
           <h2 className="font-semibold text-4xl lg:text-5xl text-primary"> Se você é um treinador, aqui é sua vitrine!</h2>
           <p className="text-muted text-lg">
@@ -119,18 +119,18 @@ export const LandingPage = () => {
         </div>
       </div>
 
-      <div className="bg-footer-background -mx-6 lg:-mx-16 flex-col justify-center items-center pb-20 gap-10 relative z-50 hidden md:flex lg:flex">
-        <h3 className="text-center text-white text-4xl py-20 w-5/12">
+      <div className="bg-footer-background -mx-6 lg:-mx-16 flex flex-col justify-center items-center pb-20 gap-10 relative z-50">
+        <h3 className="text-center text-white text-4xl py-20 lg:w-4/12">
           Nossos treinadores melhor avaliados
         </h3>
 
-        <div className="flex w-4/6 gap-10 justify-center">
+        <div className="flex lg:w-4/6 gap-24 lg:gap-10 justify-center flex-wrap lg:flex-nowrap">
           {trainer_ratings.map((trainer_rating) => (
             <RatingCard trainer_rating={trainer_rating} />
           ))}
         </div>
 
-        <Cta>Quero dar aulas</Cta>
+        <Cta className="">Quero dar aulas</Cta>
       </div>
     </Layout>
   );

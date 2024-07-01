@@ -4,8 +4,8 @@ import { Modal } from '@/components/common/modal';
 export const Login = () => {
   return (
     <Modal>
-      <h1 className="font-bold text-3xl text-secondary">Login</h1>
-      <p className="text-muted pt-3">Insira seu e-mail e senha</p>
+      <h1 className="md:lg:font-bold md:lg:text-3xl md:lg:text-secondary hidden md:lg:block">Login</h1>
+      <p className="md:lg:text-muted md:lg:pt-3 md:lg:text-start hidden md:lg:block">Insira seu e-mail e senha</p>
       <form>
         <Input type="email" placeholder="E-mail" className="mt-6 py-6" />
         <Input type="password" placeholder="Password" className="mt-6 py-6" />
