@@ -12,7 +12,9 @@ export const Layout = ({ children = <></> }: LayoutProps) => {
     <div className="lg:px-16 px-6">
       <Header />
       {children}
-      <Footer />
+      {
+        // <Footer /> }
+      }
     </div>
 
   )

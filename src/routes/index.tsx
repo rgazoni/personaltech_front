@@ -1,3 +1,4 @@
+import { PersonalPage } from "@/pages/private/personal-page";
 import { LandingPage } from "@/pages/public/landing-page";
 import { Login } from "@/pages/public/login";
 import { Signup } from "@/pages/public/signup";
@@ -19,6 +20,10 @@ export const AppRoutes = () => {
       <Route
         path={Routes.SIGNUP}
         element={<Signup />}
+      />
+      <Route
+        path={Routes.PAGE}
+        element={<PersonalPage />}
       />
     </Routing>
   );

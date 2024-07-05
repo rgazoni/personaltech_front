@@ -26,7 +26,7 @@ export const initialState: TInitialState = {
   equals: false,
 }
 
-export const reducer = (state = initialState, action: TPasswordAction | TFormAction) => {
+export const passwordReducer = (state = initialState, action: TPasswordAction | TFormAction) => {
   switch (action.type) {
     case 'password-length':
       return {
@@ -40,7 +40,6 @@ export const reducer = (state = initialState, action: TPasswordAction | TFormAct
         curr_password: state.curr_password,
         equals: action.payload === state.curr_password
       };
-    //case 'submit-form':
     default:
       return state;
   }

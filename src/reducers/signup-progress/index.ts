@@ -1,37 +1,34 @@
-import { Progress } from "@/utils/enums/signup-progress.enum";
+import { initialState, stageOrder } from '@/utils/constants/signup-process.constants';
+import {
+  TProgressActions,
+  TUpdatePageActions,
+  TUpdateUserActions,
+} from '@/utils/types';
+import { produce } from 'immer';
 
-const stageOrder = [
-  Progress.SIGNIN_INFO,
-  Progress.PERSONAL_INFO,
-  Progress.PAGE_INFO,
-];
-
-export type TProgressInitialState = {
-  curr_stage: Progress;
-};
-
-export const initialState: TProgressInitialState = {
-  curr_stage: Progress.SIGNIN_INFO,
-};
-
-export type TProgressActions = {
-  type: 'next' | 'previous';
-}
-
-export const progressReducer = (state = initialState, action: TProgressActions) => {
+export const progressReducer = (
+  state = initialState,
+  action: TProgressActions | TUpdateUserActions | TUpdatePageActions
+) => {
   switch (action.type) {
     case 'next':
-      if (stageOrder.indexOf(state.curr_stage) < stageOrder.length - 1)
-        return {
-          curr_stage: stageOrder[stageOrder.indexOf(state.curr_stage) + 1],
-        };
-      return state;
+      return produce(state, (draft) => {
+        if (stageOrder.indexOf(draft.curr_stage) < stageOrder.length - 1)
+          draft.curr_stage = stageOrder[stageOrder.indexOf(draft.curr_stage) + 1];
+      });
     case 'previous':
-      if (stageOrder.indexOf(state.curr_stage) >= 0)
-        return {
-          curr_stage: stageOrder[stageOrder.indexOf(state.curr_stage) - 1],
-        };
-      return state;
+      return produce(state, (draft) => {
+        if (stageOrder.indexOf(draft.curr_stage) >= 0)
+          draft.curr_stage = stageOrder[stageOrder.indexOf(draft.curr_stage) - 1];
+      });
+    case 'update-user':
+      return produce(state, (draft) => {
+        draft.user = action.payload.user;
+      });
+    case 'update-page':
+      return produce(state, (draft) => {
+        draft.page = action.payload.page;
+      });
     default:
       return state;
   }

@@ -1,15 +1,19 @@
 import { Dispatch, PropsWithChildren, useReducer } from 'react';
 import { createContext } from '..';
+import { progressReducer } from '@/reducers/signup-progress';
 import {
   TProgressActions,
   TProgressInitialState,
-  initialState,
-  progressReducer,
-} from '@/reducers/signup-progress';
+  TUpdatePageActions,
+  TUpdateUserActions,
+} from '@/utils/types/signup-process.types';
+import { initialState } from '@/utils/constants/signup-process.constants';
 
 const [useContext, Provider] = createContext<{
   state: TProgressInitialState;
-  dispatch: Dispatch<TProgressActions>;
+  dispatch: Dispatch<
+    TProgressActions | TUpdateUserActions | TUpdatePageActions
+  >;
 }>();
 
 export const useProgressContext = useContext;

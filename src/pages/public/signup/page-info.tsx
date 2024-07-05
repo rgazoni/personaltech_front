@@ -42,16 +42,12 @@ export const PageInfo = () => {
             <BadgeCheck size={40} className="text-muted" />
           </div>
         </div>
-        <div className="mt-10 flex w-full justify-between">
+        <div className="flex w-full flex-col">
           <Button
-            variant={null}
-            type="button"
-            onClick={() => dispatch({ type: 'previous' })}
+            className="mx-auto mt-10 w-4/6 rounded-full py-6"
+            type="submit"
           >
-            Voltar
-          </Button>
-          <Button className="rounded-lg" type="submit">
-            Concluir
+            Criar página
           </Button>
         </div>
       </form>

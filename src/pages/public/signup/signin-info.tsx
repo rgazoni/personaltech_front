@@ -2,15 +2,15 @@ import { LabeledInput } from '@/components/common/labeled-input';
 import { Button } from '@/components/ui/button';
 import { isValidEmail } from '@/lib/helpers';
 import { useProgressContext } from '@/providers/signup-provider';
-import { initialState, reducer } from '@/reducers/signup-validation';
+import { initialState, passwordReducer } from '@/reducers/signup-validation';
 import { useReducer, useState } from 'react';
 
 export const SigninInfo = () => {
   const [email, setEmail] = useState<boolean>(true);
   // @reducers/password-validation-signup
-  const [{ len, equals }, dispatch] = useReducer(reducer, initialState);
+  const [{ len, equals }, dispatch] = useReducer(passwordReducer, initialState);
   // @context
-  const { dispatch: progressDispatch } = useProgressContext();
+  const { dispatch: progressDispatch, state } = useProgressContext();
 
   return (
     <div>
@@ -28,14 +28,19 @@ export const SigninInfo = () => {
             setEmail(false);
             return;
           }
-          dispatch({ type: 'submit-form', payload: obj });
-          //maybe an await here
-          //then history.push('/dashboard')
+
+          progressDispatch({ type: 'update-user', payload: { user: obj } });
           progressDispatch({ type: 'next' });
         }}
       >
         <div>
-          <LabeledInput id="email" label="E-mail" type="text" name="email" />
+          <LabeledInput
+            id="email"
+            label="E-mail"
+            type="text"
+            name="email"
+            defaultValue={state.user.email}
+          />
           {!email && (
             <p className="pt-0.5 text-xs font-light text-destructive">
               Seu e-mail deve ser válido
@@ -77,7 +82,7 @@ export const SigninInfo = () => {
             type="submit"
             disabled={!len || !equals}
           >
-            Criar conta
+            Avançar
           </Button>
         </div>
       </form>
