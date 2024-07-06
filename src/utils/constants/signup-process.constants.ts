@@ -13,6 +13,7 @@ export const initialState: TProgressInitialState = {
     email: '',
     password: '',
     cref: '',
+    type: '',
     name: '',
   },
   page: {

@@ -2,24 +2,24 @@ import './styles.css';
 
 // @types
 type ModalProps = {
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 export const Modal = ({ children }: ModalProps) => {
   return (
-    <div className="flex justify-center h-screen items-center flex-col">
+    <div className="flex h-screen flex-col items-center justify-center">
+      <div className="circle modal-top-left absolute"></div>
+      <div className="circle modal-bottom-right absolute"></div>
 
-      <div className="absolute circle modal-top-left"></div>
-      <div className="absolute circle modal-bottom-right"></div>
+      <div className="z-50 flex flex-col items-center justify-center rounded-lg bg-white p-7 shadow-xl md:w-full md:rounded-none md:bg-transparent md:p-0 md:shadow-none">
+        <h1 className="mb-5 text-4xl font-bold text-primary md:absolute md:left-16 md:top-8">
+          Personal<span className="font-light italic">tech</span>
+        </h1>
 
-      <h1 className="md:absolute md:top-8 md:left-16 font-bold text-4xl text-primary">
-        Personal<span className="font-light italic">tech</span>
-      </h1>
-
-      <div className="relative z-50 p-5 md:p-20 md:bg-white w-5/6 md:w-3/6 flex flex-col 
-        justify-center h-fit rounded-lg md:shadow-xl">
-        {children}
+        <div className="relative z-50 flex h-fit w-5/6 flex-col justify-center rounded-lg p-5 md:w-4/6 md:bg-white md:p-20 md:shadow-xl lg:w-3/6">
+          {children}
+        </div>
       </div>
     </div>
   );
-}
+};

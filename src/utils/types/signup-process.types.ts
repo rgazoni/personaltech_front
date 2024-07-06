@@ -11,6 +11,7 @@ export type TSignupUserInfo = {
   password?: string;
   cref?: string;
   name?: string;
+  type?: string;
 }
 
 export type TSignupPageInfo = {
