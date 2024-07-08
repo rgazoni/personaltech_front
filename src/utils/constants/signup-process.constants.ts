@@ -1,5 +1,5 @@
 import { Progress } from "../enums";
-import { TProgressInitialState } from "../types";
+import { TProgressInitialState } from "../types/signup-process-reducer.types";
 
 export const stageOrder = [
   Progress.SIGNIN_INFO,
@@ -15,10 +15,5 @@ export const initialState: TProgressInitialState = {
     cref: '',
     type: '',
     name: '',
-  },
-  page: {
-    user_id: '',
-    url: '',
-    page_name: '',
   },
 };

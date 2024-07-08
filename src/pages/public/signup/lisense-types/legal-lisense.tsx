@@ -5,9 +5,9 @@ import { useAppDispatch, useAppSelector } from '@/features/store';
 import { createUser } from '@/features/user/create-user';
 import { useProgressContext } from '@/providers/signup-provider';
 import { useEffect, useState } from 'react';
-import { useSubmitionOutput } from './hooks/use-form-submition';
 import { formatCref } from '@/lib/formatters';
 import { isValidCref } from '@/lib/helpers';
+import { useSubmitionOutput } from '../hooks/use-form-submition';
 
 export const LegalLisense = () => {
   // @reducers

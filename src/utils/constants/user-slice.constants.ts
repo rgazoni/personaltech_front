@@ -8,7 +8,7 @@ export const userSliceInitialState: TUserSlice = {
   },
   request: {
     loading: false,
-    error: undefined,
+    error: null,
   },
 };
 
