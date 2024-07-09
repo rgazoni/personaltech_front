@@ -8,6 +8,14 @@ export type TRequest = {
 export type TPage = {
   url: string;
   page_name: string;
+  profession: string;
+  service_value: string;
+  about_you: string;
+  whatsapp: string;
+  instagram: string;
+  tiktok: string;
+  youtube: string;
+  presentation_video: string;
 }
 
 export type TPageSlice = {

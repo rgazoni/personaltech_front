@@ -1,0 +1,6 @@
+.menu-item{
+  @apply text-muted;
+}
+.menu-item-active{
+  @apply text-primary underline underline-offset-4;
+}

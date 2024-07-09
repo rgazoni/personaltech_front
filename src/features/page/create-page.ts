@@ -10,7 +10,13 @@ const requestOptions: RequestInit = {
   },
 };
 
-export const createPage = createAsyncThunk(
+export const createPage = createAsyncThunk<
+  TCreatePage,
+  TCreatePage,
+  {
+    rejectValue: ErrorToast;
+  }
+>(
   'page/createPage',
   async (page: TCreatePage, thunkAPI) => {
     const rejectWithValue = thunkAPI.rejectWithValue;

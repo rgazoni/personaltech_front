@@ -14,7 +14,7 @@ export const createUser = createAsyncThunk(
   'user/createUser',
   async (user: TSignupUserInfo, thunkAPI) => {
     const rejectWithValue = thunkAPI.rejectWithValue;
-    const response = await fetch(url + 'users/create', {
+    const response = await fetch(url + 'user/create', {
       ...requestOptions,
       body: JSON.stringify(user),
     });

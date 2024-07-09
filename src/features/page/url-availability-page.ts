@@ -9,26 +9,32 @@ const requestOptions: RequestInit = {
   },
 };
 
-export const urlAvailabilityPage = createAsyncThunk(
-  'page/urlAvailability',
-  async (page_url: TUrlAvailability, thunkAPI) => {
-    const rejectWithValue = thunkAPI.rejectWithValue;
-    const response = await fetch(url + `pages/verify/url?url=${page_url.page_url}`, {
-      method: 'GET', // HTTP method
-      ...requestOptions,
-    });
+export const urlAvailabilityPage = createAsyncThunk<
+  { url: string; status: string },
+  TUrlAvailability,
+  {
+    rejectValue: ErrorToast;
+  }>
+  (
+    'page/urlAvailability',
+    async (page_url: TUrlAvailability, thunkAPI) => {
+      const rejectWithValue = thunkAPI.rejectWithValue;
+      const response = await fetch(url + `pages/verify/url?url=${page_url.page_url}`, {
+        method: 'GET', // HTTP method
+        ...requestOptions,
+      });
 
-    if (!response.ok) {
-      const payload: ErrorToast = {
-        title: 'Erro no cadastro',
-        text: 'Ocorreu um erro inesperado, tente novamente mais tarde',
-      };
-      return rejectWithValue(payload);
+      if (!response.ok) {
+        const payload: ErrorToast = {
+          title: 'Erro no cadastro',
+          text: 'Ocorreu um erro inesperado, tente novamente mais tarde',
+        };
+        return rejectWithValue(payload);
+      }
+      const data: {
+        url: string;
+        status: string;
+      } = await response.json();
+      return data;
     }
-    const data: {
-      url: string;
-      status: string;
-    } = await response.json();
-    return data;
-  }
-);
+  );

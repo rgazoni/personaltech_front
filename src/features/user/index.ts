@@ -15,7 +15,10 @@ const userSlice = createSlice({
       })
       .addCase(createUser.fulfilled, (state, action) => {
         state.request.loading = false;
-        state.user = action.payload;
+        state.user = {
+          is_authenticated: true,
+          ...action.payload,
+        };
       })
       .addCase(createUser.rejected, (state, action) => {
         state.request.loading = false;

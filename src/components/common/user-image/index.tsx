@@ -2,7 +2,7 @@ type UserImageProps = {
   src: string;
   height: string;
   width: string;
-  borderRadius: string;
+  borderRadius?: string;
 };
 
 //TODO: On source image, add a default image if src is not provided
@@ -13,7 +13,7 @@ export const UserImage = ({
   src = DEFAULT_IMAGE_URL,
   height,
   width,
-  borderRadius,
+  borderRadius = '0.75',
 }: UserImageProps) => {
   return (
     <div

@@ -1,4 +1,5 @@
 export type TUser = {
+  is_authenticated: boolean;
   token?: string;
   id?: string;
   email: string;
