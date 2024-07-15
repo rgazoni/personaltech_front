@@ -6,4 +6,5 @@ export type TUser = {
   cref: string;
   is_cref_verified?: boolean;
   type: string;
+  name?: string;
 }

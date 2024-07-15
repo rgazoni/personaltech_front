@@ -36,7 +36,7 @@ export const Sidebar = () => {
                   className={`menu-item ${item.path === pathname ? "menu-item-active" : ""
                     }`}
                 >
-                  <p className="font-semibold text-start mt-1 text-lg">
+                  <p className="font-semibold text-start text-lg">
                     {item.title}
                   </p>
                 </div>

@@ -73,7 +73,7 @@ export const PageInfo = () => {
 
   useEffect(() => {
     if (isResponseWithNoErrors) {
-      navigate('/page');
+      navigate('/u/page/edit');
     }
   }, [isResponseWithNoErrors]);
 

@@ -1,4 +1,4 @@
-import { ErrorToast } from "./error.types";
+import { ErrorToast } from './error.types';
 
 export type TRequest = {
   loading: boolean;
@@ -16,7 +16,9 @@ export type TPage = {
   tiktok: string;
   youtube: string;
   presentation_video: string;
-}
+  header_color: string;
+  profile_picture: string;
+};
 
 export type TPageSlice = {
   page: TPage;

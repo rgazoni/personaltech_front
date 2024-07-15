@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { AboutYou } from './about-you';
 import { SocialMedia } from './social-media';
-import { useEditPersonalPageFormContext } from '@/providers/edit-personal-page-form';
+import { useAppSelector } from '@/features/store';
 
 export const PersonalData = () => {
-  const { state } = useEditPersonalPageFormContext();
+  const { page } = useAppSelector(state => state.page)
   return (
     <form
       onSubmit={(e) => {
@@ -32,11 +32,11 @@ export const PersonalData = () => {
           className="rounded-full px-8"
           type="submit"
           disabled={
-            !state.page_name ||
-            !state.profession ||
-            !state.service_value ||
-            !state.about_you ||
-            !state.whatsapp
+            !page.page_name ||
+            !page.profession ||
+            !page.service_value ||
+            !page.about_you ||
+            !page.whatsapp
           }
         >
           Publicar página

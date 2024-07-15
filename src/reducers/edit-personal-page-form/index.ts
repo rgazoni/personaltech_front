@@ -1,19 +1,36 @@
+import { useAppSelector } from '@/features/store';
 import { produce } from 'immer';
 
-export const editPersonalPageFormInitValue = {
-  page_name: '',
-  profession: '',
-  service_value: '',
-  about_you: '',
-  whatsapp: '',
-  instagram: '',
-  tiktok: '',
-  youtube: '',
-  presentation_video: '',
-};
+export const initEditReducer = () => {
+  const { page } = useAppSelector((state) => state.page);
+  console.log('aqui', page)
+  return {
+    page_name: page.page_name,
+    profession: page.profession,
+    service_value: page.service_value,
+    about_you: page.about_you,
+    whatsapp: page.whatsapp,
+    instagram: page.instagram,
+    tiktok: page.tiktok,
+    youtube: page.youtube,
+    presentation_video: page.presentation_video
+  };
+}
 
-export type TEditPersonalPageForm = Partial<
-  typeof editPersonalPageFormInitValue
+export type TEditPersonalPageForm = {
+  page_name: string;
+  profession: string;
+  service_value: string;
+  about_you: string;
+  whatsapp: string;
+  instagram: string;
+  tiktok: string;
+  youtube: string;
+  presentation_video: string;
+}
+
+export type TEditPersonalPageFormPartial = Partial<
+  TEditPersonalPageForm
 >;
 
 export type TEditPersonalPageFormActions = {
@@ -27,12 +44,17 @@ export type TEditPersonalPageFormActions = {
   | 'update-tiktok'
   | 'update-youtube'
   | 'update-presentation_video';
-  payload: Partial<TEditPersonalPageForm>;
+  payload: Partial<TEditPersonalPageFormPartial>;
 };
 
+export type TEditPersonalPageFormAllFieldsAction = {
+  type: 'update-all-fields';
+  payload: TEditPersonalPageForm
+}
+
 export const editPersonalPageFormReducer = (
-  state = editPersonalPageFormInitValue,
-  action: TEditPersonalPageFormActions
+  state = initEditReducer(),
+  action: TEditPersonalPageFormActions | TEditPersonalPageFormAllFieldsAction
 ) => {
   switch (action.type) {
     case 'update-page_name':
@@ -80,6 +102,10 @@ export const editPersonalPageFormReducer = (
         if (action.payload.presentation_video)
           draft.presentation_video = action.payload.presentation_video;
       });
+    case 'update-all-fields':
+      return produce(state, (draft) => {
+        draft = action.payload;
+      })
     default:
       return state;
   }

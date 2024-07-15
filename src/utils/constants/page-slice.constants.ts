@@ -12,6 +12,8 @@ export const pageSliceInitialState: TPageSlice = {
     tiktok: '',
     youtube: '',
     presentation_video: '',
+    header_color: '',
+    profile_picture: ''
   },
   request: {
     loading: false,

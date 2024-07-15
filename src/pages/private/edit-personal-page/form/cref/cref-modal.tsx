@@ -9,11 +9,10 @@ export const CrefModal = ({
   if (isVerified) {
     cref_text = 'Seu CREF foi verificado com sucesso!';
   } else if (isVerified === false) {
-    cref_text = 'Seu CREF não foi verificado com sucesso!';
+    cref_text = 'Seu CREF não pôde ser verificado, corrija-o!';
   } else {
     cref_text = 'Aguardando verificação do seu CREF...';
   }
-
   return (
     <div className="w-full">
       <h3 className="pb-4 text-muted font-light text-base">

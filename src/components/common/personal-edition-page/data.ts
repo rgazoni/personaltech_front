@@ -14,7 +14,7 @@ export async function initializeMenuItems() {
     },
     {
       title: "Meus dados",
-      path: "/u/page/edit/form",
+      path: "/u/page/edit",
     },
   ];
 
