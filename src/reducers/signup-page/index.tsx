@@ -1,13 +1,13 @@
 import { pageNameInitState } from '@/utils/constants/signup-page-reducer.constants';
-import { TTriggerUrlSuggestion, TUpdatePageActions } from '@/utils/types/signup-page-reducer.types';
 import { produce } from 'immer';
+import { SignupPageActions } from './signup-page.types';
 
 const RANDOM_NUMBER = Math.floor(Math.random() * 10000);
 
 export const signupPageReducer =
   (
     state = pageNameInitState,
-    action: TUpdatePageActions | TTriggerUrlSuggestion
+    action: SignupPageActions
   ) => {
     switch (action.type) {
       case 'update-page-name':

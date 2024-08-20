@@ -1,0 +1,5 @@
+export enum Progress {
+  SIGNIN_INFO = 'SIGNIN_INFO',
+  LISENSE_INFO = 'LISENSE_INFO',
+  PAGE_INFO = 'PAGE_INFO',
+}

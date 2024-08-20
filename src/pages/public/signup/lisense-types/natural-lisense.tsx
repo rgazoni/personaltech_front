@@ -1,18 +1,20 @@
 import { LabeledInput } from '@/components/common/labeled-input';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useAppDispatch, useAppSelector } from '@/features/store';
-import { createUser } from '@/features/user/create-user';
 import { useProgressContext } from '@/providers/signup-provider';
 import { useEffect, useState } from 'react';
 import { isValidCref } from '@/lib/helpers';
 import { formatCref } from '@/lib/formatters';
-import { useSubmitionOutput } from '../hooks/use-form-submition';
+import { createUser } from '@/api/user';
+import { useMutation } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast.hook';
+import useAppStore from '@/store';
 
 export const NaturalLisense = () => {
+  const updateUser = useAppStore((state) => state.updateUser);
+
   // @reducers
   const { dispatch, state } = useProgressContext();
-  const request = useAppSelector((appState) => appState.user.request);
 
   // @states
   const [cref, setCref] = useState<string>('');
@@ -27,13 +29,21 @@ export const NaturalLisense = () => {
   }, [cref]);
 
   // @hooks
-  const appDispatch = useAppDispatch();
-  const { formTriggered, isResponseWithNoErrors, isLoading } =
-    useSubmitionOutput(request.error, request.loading);
+  const { notify } = useToast();
 
-  if (isResponseWithNoErrors) {
-    dispatch({ type: 'next' });
-  }
+  const mutation = useMutation({
+    mutationKey: ['createUser/natural'],
+    mutationFn: createUser,
+    onSuccess: (data) => {
+      notify('success', '🏋️ Usuário criado com sucesso!');
+      updateUser(data);
+      dispatch({ type: 'next' });
+      updateUser(data);
+    },
+    onError: () => {
+      notify('error', 'Erro ao criar usuário');
+    }
+  });
 
   return (
     <form
@@ -45,15 +55,12 @@ export const NaturalLisense = () => {
           cref: formData.get('cref') as string,
           type: 'natural',
         };
-        appDispatch(
-          createUser({
-            cref: obj.cref,
-            type: obj.type,
-            email: state.user.email,
-            password: state.user.password,
-          })
-        );
-        formTriggered(true);
+        mutation.mutate({
+          cref: obj.cref,
+          type: obj.type,
+          email: state.user.email,
+          password: state.user.password,
+        });
       }}
     >
       <div className="flex items-end gap-5">
@@ -91,8 +98,12 @@ export const NaturalLisense = () => {
         >
           Voltar
         </Button>
-        <Button className="rounded-lg" type="submit" disabled={!terms || !isValid}>
-          {isLoading ? 'Carregando...' : 'Criar Conta'}
+        <Button
+          className="rounded-lg"
+          type="submit"
+          disabled={!terms || !isValid}
+        >
+          {mutation.isPending ? 'Carregando...' : 'Criar Conta'}
         </Button>
       </div>
     </form>

@@ -9,7 +9,7 @@ export const BadgeExpertise = ({ expertise }: BadgeExpertiseProps) => {
   const key = useId() + expertise;
   return (
     <div>
-      <Badge key={key} className="bg-black hover:bg-black">
+      <Badge key={key} className="bg-black hover:bg-black text-sm">
         {expertise}
       </Badge>
     </div>

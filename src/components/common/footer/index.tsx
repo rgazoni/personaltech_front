@@ -1,7 +1,7 @@
 
 export const Footer = () => {
   return (
-    <footer className="bg-footer-background -mx-8 lg:-mx-16 -mb-8 lg:pt-24 relative z-50">
+    <footer className="bg-footer-background -mx-8 lg:-mx-16 -mb-8 lg:pt-24 relative z-50 mt-28">
       <div className="lg:px-16 py-8 px-6">
         <h1 className="font-bold text-4xl text-primary">
           Personal<span className="font-light italic">tech</span>

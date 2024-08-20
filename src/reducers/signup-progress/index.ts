@@ -1,16 +1,10 @@
-import {
-  initialState,
-  stageOrder,
-} from '@/utils/constants/signup-process.constants';
-import {
-  TProgressActions,
-  TUpdateUserActions,
-} from '@/utils/types/signup-process-reducer.types';
 import { produce } from 'immer';
+import { initialState, stageOrder } from './progress.constants';
+import { ProgressActions, UpdateUserActions } from './progress.types';
 
 export const progressReducer = (
   state = initialState,
-  action: TProgressActions | TUpdateUserActions
+  action: ProgressActions | UpdateUserActions
 ) => {
   switch (action.type) {
     case 'next':
@@ -27,7 +21,10 @@ export const progressReducer = (
       });
     case 'update-user':
       return produce(state, (draft) => {
-        draft.user = action.payload.user;
+        draft.user = {
+          ...draft.user,
+          ...action.payload.user,
+        }
       });
     default:
       return state;

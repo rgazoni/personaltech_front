@@ -1,39 +1,53 @@
-import { TCreatePage } from '@/@types/page';
+import { createPage, urlAvailabilityPage } from '@/api/page';
 import { LabeledInput } from '@/components/common/labeled-input';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { createPage } from '@/features/page/create-page';
-import { urlAvailabilityPage } from '@/features/page/url-availability-page';
-import { useAppDispatch, useAppSelector } from '@/features/store';
-import { useLoading } from '@/hooks/use-loading.hook';
+import { useToast } from '@/hooks/use-toast.hook';
 import { signupPageReducer } from '@/reducers/signup-page';
-import {
-  triggerUrlSuggestion,
-  updatePageName,
-  updatePageUrl,
-} from '@/reducers/signup-page/actions';
+import { triggerUrlSuggestion, updatePageName, updatePageUrl } from '@/reducers/signup-page/signup-page.actions';
+import useAppStore from '@/store';
 import { pageNameInitState } from '@/utils/constants/signup-page-reducer.constants';
+import { useMutation } from '@tanstack/react-query';
 import { BadgeCheck } from 'lucide-react';
-import { useEffect, useReducer, useRef } from 'react';
-import { useSubmitionOutput } from './hooks/use-form-submition';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const PageInfo = () => {
+  const user = useAppStore((state) => state.user);
+  const updatePartial = useAppStore((state) => state.updatePartialPage);
+
+  // @states
+  const [isUrlAvailable, setIsUrlAvailable] = useState<boolean>(false);
+
   // @reducers
   const [state, dispatch] = useReducer(signupPageReducer, pageNameInitState);
-  const appDispatch = useAppDispatch();
-  const page = useAppSelector((state) => state.page);
-  const user = useAppSelector((state) => state.user);
-
-  const { formTriggered, isResponseWithNoErrors, isLoading: isLoadingForm } =
-    useSubmitionOutput(page.request.error, page.request.loading);
 
   // @hooks
-  const { isLoading, setIsLoading } = useLoading(page.request.loading);
-  const isPageAvailable = page.page.url && !isLoading;
+  const { notify } = useToast();
   const navigate = useNavigate();
+  const mutation_url = useMutation({
+    mutationKey: ['page/url-availability', { page_url: state.url }],
+    mutationFn: urlAvailabilityPage,
+    onSuccess: (data) => {
+      setIsUrlAvailable(data.status === 'available');
+    }
+  });
+  const mutation_create = useMutation({
+    mutationKey: ['page/create', { page_url: state.url }],
+    mutationFn: createPage,
+    onSuccess: (data) => {
+      notify('success', '🏋️ Página criada com sucesso!');
+      updatePartial(data);
+      navigate('/u/page/edit');
+    },
+    onError: (error) => {
+      notify('error', 'Erro ao criar página, tente novamente mais tarde!');
+      console.error(error);
+    }
+  });
 
+  // @references
   const timeout = useRef<NodeJS.Timeout>();
   // @handlers
   const handleUrlAvailability = () => {
@@ -42,23 +56,10 @@ export const PageInfo = () => {
     }
     timeout.current = setTimeout(() => {
       if (state.url) {
-        appDispatch(urlAvailabilityPage({ page_url: state.url }));
-        setIsLoading(true);
+        mutation_url.mutate(state.url);
       }
     }, 300);
   };
-
-  const handlePageCreation = (object: TCreatePage) => {
-    if (timeout.current) {
-      clearTimeout(timeout.current);
-    }
-    timeout.current = setTimeout(() => {
-      if (state.url) {
-        appDispatch(createPage(object));
-        setIsLoading(true);
-      }
-    }, 1500);
-  }
 
   // @effects
   useEffect(() => {
@@ -71,12 +72,6 @@ export const PageInfo = () => {
     }
   }, [state.url]);
 
-  useEffect(() => {
-    if (isResponseWithNoErrors) {
-      navigate('/u/page/edit');
-    }
-  }, [isResponseWithNoErrors]);
-
   return (
     <div>
       <h1 className="text-3xl font-bold text-secondary">
@@ -88,13 +83,11 @@ export const PageInfo = () => {
           e.preventDefault();
           const formData = new FormData(e.target as HTMLFormElement);
           const obj = {
-            user_id: user.user.id,
+            user_id: user.id,
             page_name: formData.get('page-name') as string,
             url: formData.get('page-url') as string,
           };
-          console.log(obj);
-          formTriggered(true);
-          handlePageCreation(obj);
+          mutation_create.mutate(obj);
         }}
       >
         <div className="mt-5">
@@ -126,7 +119,7 @@ export const PageInfo = () => {
                 dispatch(updatePageUrl(e.target.value));
               }}
             />
-            {isPageAvailable ? (
+            {isUrlAvailable ? (
               <BadgeCheck size={40} className="text-silver-tree-400" />
             ) : (
               <BadgeCheck size={40} className="text-muted" />
@@ -137,9 +130,9 @@ export const PageInfo = () => {
           <Button
             className="mx-auto mt-10 w-4/6 rounded-full py-6"
             type="submit"
-            disabled={!isPageAvailable}
+            disabled={!isUrlAvailable}
           >
-            {isLoadingForm ? 'Carregando...' : 'Criar página'}
+            {mutation_create.isPending ? 'Carregando...' : 'Criar página'}
           </Button>
         </div>
       </form>

@@ -1,23 +1,20 @@
 import { LabeledInput } from '@/components/common/labeled-input';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useAppDispatch, useAppSelector } from '@/features/store';
-import { createUser } from '@/features/user/create-user';
 import { useProgressContext } from '@/providers/signup-provider';
 import { useEffect, useState } from 'react';
 import { formatCref } from '@/lib/formatters';
 import { isValidCref } from '@/lib/helpers';
-import { useSubmitionOutput } from '../hooks/use-form-submition';
+import { useToast } from '@/hooks/use-toast.hook';
+import { useMutation } from '@tanstack/react-query';
+import { createUser } from '@/api/user';
+import useAppStore from '@/store';
 
 export const LegalLisense = () => {
+  const updateUser = useAppStore((state) => state.updateUser);
+
   // @reducers
   const { dispatch, state } = useProgressContext();
-  const request = useAppSelector((state) => state.user.request);
-
-  // @hooks
-  const appDispatch = useAppDispatch();
-  const { formTriggered, isResponseWithNoErrors, isLoading } =
-    useSubmitionOutput(request.error, request.loading);
 
   // @states
   const [cref, setCref] = useState<string>('');
@@ -31,9 +28,22 @@ export const LegalLisense = () => {
     setIsValid(isValidCref(cref, 'juridical'));
   }, [cref]);
 
-  if (isResponseWithNoErrors) {
-    dispatch({ type: 'next' });
-  }
+  // @hooks
+  const { notify } = useToast();
+
+  const mutation = useMutation({
+    mutationKey: ['createUser/natural'],
+    mutationFn: createUser,
+    onSuccess: (data) => {
+      notify('success', '🏋️ Usuário criado com sucesso!');
+      updateUser(data);
+      dispatch({ type: 'next' });
+      updateUser(data);
+    },
+    onError: () => {
+      notify('error', 'Erro ao criar usuário');
+    }
+  });
 
   return (
     <form
@@ -45,15 +55,12 @@ export const LegalLisense = () => {
           cref: formData.get('cref') as string,
           type: 'juridical',
         };
-        appDispatch(
-          createUser({
-            cref: obj.cref,
-            type: obj.type,
-            email: state.user.email,
-            password: state.user.password,
-          })
-        );
-        formTriggered(true);
+        mutation.mutate({
+          cref: obj.cref,
+          type: obj.type,
+          email: state.user.email,
+          password: state.user.password,
+        });
       }}
     >
       <div className="flex items-end gap-5">
@@ -98,7 +105,7 @@ export const LegalLisense = () => {
           type="submit"
           disabled={!terms || !isValid}
         >
-          {isLoading ? 'Carregando...' : 'Criar Conta'}
+          {mutation.isPending ? 'Carregando...' : 'Criar Conta'}
         </Button>
       </div>
     </form>

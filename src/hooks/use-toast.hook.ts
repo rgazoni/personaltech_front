@@ -12,15 +12,13 @@ const toastOptions = {
   transition: Bounce,
 };
 
+type ToastType = 'success' | 'error';
+
 export const useToast = () => {
 
-  const notify = (message: string) => {
-    toast(message, toastOptions);
+  const notify = (type: ToastType, message: string) => {
+    toast[type](message, toastOptions);
   }
 
-  const notifyError = (message: string) => {
-    toast.error(message, toastOptions);
-  }
-
-  return { notify, notifyError };
+  return { notify };
 }
