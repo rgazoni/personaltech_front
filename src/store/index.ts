@@ -2,26 +2,28 @@ import { create, StateCreator } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
 // >> START USER SLICE
-const initialUser = {
+export const initialUser = {
   token: '',
   id: '',
   email: '',
-  is_cref_verified: false,
+  is_cref_verified: '',
   cref: '',
   createdAt: '',
   updatedAt: '',
   type: '',
+  role: '',
 };
 
 export interface User {
   token: string;
   id: string;
   email: string;
-  is_cref_verified: boolean;
+  is_cref_verified: string;
   cref: string;
   createdAt: string;
   updatedAt: string;
   type: string;
+  role: string;
 }
 
 interface UserSlice {
@@ -35,8 +37,52 @@ const createUserSlice: StateCreator<UserSlice, [], [], UserSlice> = (set) => ({
 });
 // << END USER SLICE
 
+// >> START CLIENT SLICE
+export const initialClient = {
+  token: '',
+  id: '',
+  email: '',
+  createdAt: '',
+  updatedAt: '',
+  role: '',
+  full_name: '',
+  birthdate: '',
+  avatar: '',
+  sawNot: false,
+  md5Not: '',
+};
+
+export interface Client {
+  token: string;
+  id: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+  role: string;
+  full_name: string;
+  birthdate: string;
+  avatar: string;
+  sawNot: boolean;
+  md5Not: string;
+}
+
+interface ClientSlice {
+  client: Client;
+  updateClient: (client: Client) => void;
+  setSawNotifications: (saw: boolean, md5: string) => void;
+}
+
+const createClientSlice: StateCreator<ClientSlice, [], [], ClientSlice> = (set) => ({
+  client: initialClient,
+  updateClient: (client) => set({ client }),
+  setSawNotifications: (saw: boolean, md5: string) =>
+    set((state) => ({ client: { ...state.client, sawNot: saw, md5Not: md5 } })),
+});
+// << END CLIENT SLICE
+
+
 // >> START PAGE SLICE
-const initialPage = {
+export const initialPage = {
   page_name: '',
   expertises: [],
   url: '',
@@ -49,6 +95,9 @@ const initialPage = {
   youtube: '',
   presentation_video: '',
   background_color: '#272727',
+  avatar: '',
+  avatarFile: new File([], ''),
+  is_published: false,
 };
 
 export interface Page {
@@ -64,6 +113,10 @@ export interface Page {
   youtube: string;
   presentation_video: string;
   background_color: string;
+  avatar: string;
+  avatarFile: File;
+  is_published: boolean;
+  cref?: string;
 }
 
 interface PageSlice {
@@ -82,8 +135,10 @@ const createPageSlice: StateCreator<PageSlice, [], [], PageSlice> = (set) => ({
 });
 // << END PAGE SLICE
 
+
+
 // Combine the slices
-interface AppState extends UserSlice, PageSlice { }
+interface AppState extends UserSlice, PageSlice, ClientSlice { }
 
 const useAppStore = create<AppState>()(
   devtools(
@@ -91,6 +146,7 @@ const useAppStore = create<AppState>()(
       (set, get, api) => ({
         ...createUserSlice(set, get, api),
         ...createPageSlice(set, get, api),
+        ...createClientSlice(set, get, api),
       }),
       { name: 'app-store' }
     )

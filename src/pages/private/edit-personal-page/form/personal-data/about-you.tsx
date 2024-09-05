@@ -36,7 +36,6 @@ export const AboutYou = ({ data }: AboutYouProps) => {
     }
   };
 
-
   return (
     <div className="flex flex-col gap-5">
       <LabeledInput
@@ -54,11 +53,11 @@ export const AboutYou = ({ data }: AboutYouProps) => {
       <Label className={'text-sm font-light text-tertiary'}>
         Selecione suas especialidades *
       </Label>
-      <div className="flex gap-2 pb-1">
+      <div className="flex gap-2 pb-1 flex-wrap w-full">
         {expertisesOpts.map((expertise) => (
           <Badge
             key={expertise.id}
-            className={`text-sm font-light text-secondary text-white hover:cursor-pointer
+            className={`text-sm font-light text-secondary text-white hover:cursor-pointer text-nowrap
             ${state.expertises.includes(expertise.label) ? 'bg-primary shadow-lg' : 'bg-secondary'}
               `}
             onClick={() => handleExpertises(expertise.label)}
@@ -88,8 +87,10 @@ export const AboutYou = ({ data }: AboutYouProps) => {
         </Label>
         <Textarea
           name="about_you"
+          className='whitespace-pre-wrap'
           defaultValue={data.about_you}
           id={useId() + 'about_you'}
+          rows={8}
           onBlur={(e) =>
             dispatch({
               type: 'update-about_you',
@@ -103,6 +104,7 @@ export const AboutYou = ({ data }: AboutYouProps) => {
         name="service_value"
         id="service_value"
         defaultValue={data.service_value}
+        type="number"
         onBlur={(e) =>
           dispatch({
             type: 'update-service_value',

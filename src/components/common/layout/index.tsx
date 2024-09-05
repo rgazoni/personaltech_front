@@ -3,14 +3,15 @@ import { Header } from "../header"
 
 //@types
 type LayoutProps = {
-  children: React.ReactNode
+  children: React.ReactNode;
+  bgColorPP?: string;
 }
 
-export const Layout = ({ children = <></> }: LayoutProps) => {
+export const Layout = ({ children = <></>, bgColorPP }: LayoutProps) => {
   return (
 
     <div className="lg:px-16 px-6">
-      <Header />
+      <Header bgColorPP={bgColorPP} />
       {children}
       {
         // <Footer /> }

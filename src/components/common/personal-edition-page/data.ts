@@ -10,11 +10,15 @@ export async function initializeMenuItems() {
   const generalItems: MenuItems = [
     {
       title: "Preview do site",
-      path: "/u/page/edit/preview",
+      path: "/page/edit/preview",
     },
     {
       title: "Meus dados",
-      path: "/u/page/edit",
+      path: "/page/edit/form",
+    },
+    {
+      title: "Avaliações",
+      path: "/page/edit/rating",
     },
   ];
 

@@ -5,5 +5,7 @@ export enum Routes {
   PAGE_EDITION = "/page/edit/:path?",
   PERSONAL_PAGE = "/u/:path?",
   SEARCH = "/search",
+  SIGNUP_TRAINEE = "/signup",
+  PROFILE = "/profile",
 }
 

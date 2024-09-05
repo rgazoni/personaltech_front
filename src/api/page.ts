@@ -19,6 +19,7 @@ export const urlAvailabilityPage = async (page_url: string): Promise<UrlAvailabi
   return res.data;
 }
 
+
 export const createPage = async (page: CreatePage): Promise<CreatePage> => {
   const res = await api.post('pages/create', page);
   return res.data;
@@ -26,10 +27,16 @@ export const createPage = async (page: CreatePage): Promise<CreatePage> => {
 
 export const updatePage = async (page: UpdatePage): Promise<Page> => {
   const user = useAppStore.getState().user;
+
   const res = await api.post('pages/update',
     {
       token: user.token,
       ...page
+    },
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     }
   );
   return res.data;
@@ -37,5 +44,16 @@ export const updatePage = async (page: UpdatePage): Promise<Page> => {
 
 export const getPage = async (page_url: string): Promise<Page> => {
   const res = await api.get(`pages/${page_url}`);
+  return res.data;
+}
+
+export const getPageByToken = async (token: string): Promise<Page> => {
+  const res = await api.get(`pages/edit/${token}`);
+  console.log(res.data);
+  return res.data;
+}
+
+export const fetchTrainers = async (): Promise<Page[]> => {
+  const res = await api.get('pages/search');
   return res.data;
 }

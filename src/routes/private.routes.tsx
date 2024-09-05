@@ -1,14 +1,25 @@
-import { useAppSelector } from "@/features/store";
+import useAppStore from "@/store";
 import { Routes } from "@/utils/enums";
 import { Navigate, Outlet } from "react-router-dom";
 
 
-export const PrivateRoute = () => {
-  const { user } = useAppSelector((state) => state.user);
-  //if (user.is_authenticated) {
-  // Redirect to login page if not authenticated
-  // return <Navigate to={Routes.LOGIN} replace />;
-  //}
+export const PrivateRouteUser = () => {
+  const user = useAppStore((state) => state.user);
+
+  if (!user.token) {
+    return <Navigate to={Routes.LOGIN} replace />
+  }
+
+  // Renders child routes if authenticated
+  return <Outlet />;
+};
+
+export const PrivateRouteClient = () => {
+  const client = useAppStore((state) => state.client);
+
+  if (!client.token) {
+    return <Navigate to={Routes.LOGIN} replace />
+  }
 
   // Renders child routes if authenticated
   return <Outlet />;

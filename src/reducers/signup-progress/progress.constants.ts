@@ -11,6 +11,7 @@ export const initialState = {
   user: {
     email: '',
     password: '',
+    birthdate: '',
     cref: '',
     type: '',
     name: '',

@@ -21,6 +21,7 @@ export const SocialMedia = ({ data }: SocialMediaProps) => {
         name="whatsapp"
         id="whatsapp"
         defaultValue={data.whatsapp}
+        type="tel"
         onBlur={(e) =>
           dispatch({ type: 'update-whatsapp', payload: { whatsapp: e.target.value } })
         }

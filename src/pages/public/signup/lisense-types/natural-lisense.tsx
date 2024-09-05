@@ -58,6 +58,7 @@ export const NaturalLisense = () => {
         mutation.mutate({
           cref: obj.cref,
           type: obj.type,
+          birthdate: state.user.birthdate,
           email: state.user.email,
           password: state.user.password,
         });

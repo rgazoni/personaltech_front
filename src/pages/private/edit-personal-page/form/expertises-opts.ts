@@ -1,26 +1,50 @@
 export const expertisesOpts = [
   {
-    id: 'design',
-    label: 'Design',
+    id: 'natacao',
+    label: 'Natação',
   },
   {
-    id: 'development',
-    label: 'Development',
+    id: 'corrida',
+    label: 'Corrida',
   },
   {
-    id: 'marketing',
-    label: 'Marketing',
+    id: 'musculacao',
+    label: 'Musculação',
   },
   {
-    id: 'management',
-    label: 'Management',
+    id: 'ciclismo_estrada',
+    label: 'Ciclismo de estrada',
   },
   {
-    id: 'finance',
-    label: 'Finance',
+    id: 'crossfit',
+    label: 'Crossfit',
   },
   {
-    id: 'other',
-    label: 'Other',
+    id: 'acessoria',
+    label: 'Acessoria Esportiva',
+  },
+  {
+    id: 'funcional',
+    label: 'Funcional',
+  },
+  {
+    id: 'mountain_bike',
+    label: 'Mountain Bike',
+  },
+  {
+    id: 'escalada',
+    label: 'Escalada',
+  },
+  {
+    id: 'pilates',
+    label: 'Pilates',
+  },
+  {
+    id: 'trail_run',
+    label: 'Trail Run',
+  },
+  {
+    id: 'yoga',
+    label: 'Yoga',
   },
 ]

@@ -22,6 +22,7 @@ export const SigninInfo = () => {
           const formData = new FormData(e.target as HTMLFormElement);
           const obj = {
             email: formData.get('email') as string,
+            birthdate: formData.get('birthdate') as string,
             password: formData.get('password') as string,
           };
           if (!isValidEmail(obj.email)) {
@@ -47,6 +48,12 @@ export const SigninInfo = () => {
             </p>
           )}
         </div>
+        <LabeledInput
+          id="birthdate"
+          label="Data de Nascimento`"
+          type="date"
+          name="birthdate"
+        />
         <LabeledInput
           id="password"
           name="password"

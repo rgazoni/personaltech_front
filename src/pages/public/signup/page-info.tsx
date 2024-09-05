@@ -5,7 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast.hook';
 import { signupPageReducer } from '@/reducers/signup-page';
-import { triggerUrlSuggestion, updatePageName, updatePageUrl } from '@/reducers/signup-page/signup-page.actions';
+import {
+  triggerUrlSuggestion,
+  updatePageName,
+  updatePageUrl,
+} from '@/reducers/signup-page/signup-page.actions';
 import useAppStore from '@/store';
 import { pageNameInitState } from '@/utils/constants/signup-page-reducer.constants';
 import { useMutation } from '@tanstack/react-query';
@@ -31,7 +35,7 @@ export const PageInfo = () => {
     mutationFn: urlAvailabilityPage,
     onSuccess: (data) => {
       setIsUrlAvailable(data.status === 'available');
-    }
+    },
   });
   const mutation_create = useMutation({
     mutationKey: ['page/create', { page_url: state.url }],
@@ -39,12 +43,12 @@ export const PageInfo = () => {
     onSuccess: (data) => {
       notify('success', '🏋️ Página criada com sucesso!');
       updatePartial(data);
-      navigate('/u/page/edit');
+      navigate('/page/edit/form');
     },
     onError: (error) => {
       notify('error', 'Erro ao criar página, tente novamente mais tarde!');
       console.error(error);
-    }
+    },
   });
 
   // @references
@@ -136,6 +140,6 @@ export const PageInfo = () => {
           </Button>
         </div>
       </form>
-    </div >
+    </div>
   );
 };

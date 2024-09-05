@@ -7,6 +7,8 @@ import wppLogo from '@/assets/wpp.svg';
 import playLogo from '@/assets/play.svg';
 import instagramLogo from '@/assets/insta_logo.svg';
 import youtubeLogo from '@/assets/yt_logo.svg';
+import React from 'react';
+import { colorsDarker } from '../form/color-opts/data';
 
 export const PersonalPreviewPage = () => {
   const defaultInfo = {
@@ -31,7 +33,13 @@ export const PersonalPreviewPage = () => {
     presentation_video: state.presentation_video,
     instagram: state.instagram,
     youtube: state.youtube,
+    avatar: state.avatar,
   };
+
+  const [isDarkerColor, __] = React.useState(
+    !colorsDarker.includes(state.background_color)
+  );
+  const color = isDarkerColor ? 'text-secondary' : 'text-white';
 
   return (
     <div className="relative w-full">
@@ -43,7 +51,7 @@ export const PersonalPreviewPage = () => {
 
         {/* Left column  */}
         <div className="flex flex-col gap-3">
-          <UserImage src="" height="18" width="18" borderRadius="0.75" />
+          <UserImage src={info.avatar} height="18" width="18" borderRadius="0.75" />
           <div className="flex justify-between px-2 items-center">
             {info.presentation_video && (
               <button className='flex gap-2 items-center'>
@@ -70,19 +78,19 @@ export const PersonalPreviewPage = () => {
         <div className="grow">
           <div className="flex grow gap-6">
             <div className="mt-14 flex flex-col gap-5">
-              <h1 className="text-nowrap text-4xl font-bold text-white">
+              <h1 className={`text-nowrap text-4xl font-bold ${color}`}>
                 {info.page_name}
               </h1>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 {info.expertises.map((expertise, index) => (
                   <BadgeExpertise key={index} expertise={expertise} />
                 ))}
               </div>
               <div>
-                <h2 className="text-bg font-light text-white">
+                <h2 className={`text-bg font-light ${color}`}>
                   {info.profession}
                 </h2>
-                <h2 className="text-bg mt-1 font-light text-white">
+                <h2 className={`text-bg mt-1 font-light ${color}`}>
                   {info.cref}
                 </h2>
               </div>

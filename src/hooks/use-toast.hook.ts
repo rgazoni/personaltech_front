@@ -12,7 +12,7 @@ const toastOptions = {
   transition: Bounce,
 };
 
-type ToastType = 'success' | 'error';
+type ToastType = 'success' | 'error' | 'info';
 
 export const useToast = () => {
 

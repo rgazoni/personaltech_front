@@ -7,8 +7,10 @@ export const Sidebar = () => {
   // @states
   const [generalItems, setGeneralItems] = useState<MenuItems>([]);
 
-  // @constants
-  const pathname = useLocation().pathname;
+  let pathname = useLocation().pathname;
+  if (pathname === "/page/edit" || pathname === "/page/edit/") {
+    pathname = "/page/edit/form";
+  }
 
   // @effects
   useEffect(() => {

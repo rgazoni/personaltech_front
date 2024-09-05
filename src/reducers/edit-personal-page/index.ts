@@ -14,9 +14,11 @@ export const initEditReducer = () => {
     tiktok: page.tiktok,
     youtube: page.youtube,
     presentation_video: page.presentation_video,
-    background_color: page.background_color
+    background_color: page.background_color,
+    avatar: page.avatar,
+    avatarFile: new File([], '')
   };
-}
+};
 
 export type TEditPersonalPageForm = {
   page_name: string;
@@ -30,11 +32,11 @@ export type TEditPersonalPageForm = {
   youtube: string;
   presentation_video: string;
   background_color: string;
-}
+  avatar: string;
+  avatarFile: File;
+};
 
-export type TEditPersonalPageFormPartial = Partial<
-  TEditPersonalPageForm
->;
+export type TEditPersonalPageFormPartial = Partial<TEditPersonalPageForm>;
 
 export type TEditPersonalPageFormActions = {
   type:
@@ -48,16 +50,19 @@ export type TEditPersonalPageFormActions = {
   | 'update-youtube'
   | 'update-presentation_video'
   | 'update-background_color'
+  | 'update-avatar'
   | 'update-expertises';
   payload: TEditPersonalPageFormPartial;
 };
 
 export type TEditPersonalPageFormAllFieldsAction = {
   type: 'update-all-fields';
-  payload: TEditPersonalPageForm
-}
+  payload: TEditPersonalPageForm;
+};
 
-export type ActionsEditPersonal = TEditPersonalPageFormActions | TEditPersonalPageFormAllFieldsAction;
+export type ActionsEditPersonal =
+  | TEditPersonalPageFormActions
+  | TEditPersonalPageFormAllFieldsAction;
 
 export const editPersonalPageFormReducer = (
   state = initEditReducer(),
@@ -108,6 +113,11 @@ export const editPersonalPageFormReducer = (
       return produce(state, (draft) => {
         draft.background_color = action.payload.background_color ?? '';
       });
+    case 'update-avatar':
+      return produce(state, (draft) => {
+        draft.avatar = action.payload.avatar ?? '';
+        draft.avatarFile = action.payload.avatarFile!;
+      });
     case 'update-expertises':
       return produce(state, (draft) => {
         draft.expertises = action.payload.expertises ?? [];
@@ -115,7 +125,7 @@ export const editPersonalPageFormReducer = (
     case 'update-all-fields':
       return produce(state, (draft) => {
         draft = action.payload;
-      })
+      });
     default:
       return state;
   }
