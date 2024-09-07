@@ -8,10 +8,13 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import { initChat } from "./pages/private/message";
+
 
 const queryClient = new QueryClient()
 
 const App = () => {
+  initChat();
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -5,7 +5,7 @@ type Invite = {
   personal_id: string;
 }
 
-export interface Rating {
+export type Rating = {
   id: string;
   trainee_id: string;
   personal_id: string;
@@ -81,7 +81,12 @@ export const updateRating = async (r: Partial<Rating>): Promise<Rating> => {
   return res.data;
 }
 
-export const getRatings = async (token: string, status: string): Promise<RatingInfo[]> => {
+export const updateRequest = async (r: Partial<Rating>): Promise<Rating> => {
+  const res = await api.put('ratings/update/request', r);
+  return res.data;
+}
+
+export const getRatings = async ({ token, status }: { token: string, status: string }): Promise<RatingInfo[]> => {
   const res = await api.get('ratings/info', {
     params: {
       token,

@@ -60,6 +60,9 @@ export const LegalLisense = () => {
           type: obj.type,
           email: state.user.email,
           password: state.user.password,
+          birthdate: state.user.birthdate,
+          state: state.user.state,
+          city: state.user.city,
         });
       }}
     >

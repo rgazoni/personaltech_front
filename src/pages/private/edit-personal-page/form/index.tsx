@@ -3,13 +3,10 @@ import { ColorOpts } from './color-opts';
 import { CrefVerification } from './cref/cref-verification';
 import { PersonalData } from './personal-data';
 import { useEditPersonalContext } from '@/providers/edit-personal-page-provider';
-import useAppStore from '@/store';
-import { useQuery } from '@tanstack/react-query';
-import { fetchUserInfo } from '@/api/user';
+import { User } from '@/store';
 
-export const PersonalFormPage = () => {
+export const PersonalFormPage = ({ data }: { data: User }) => {
   const { state, dispatch } = useEditPersonalContext();
-  const user = useAppStore((state) => state.user);
   const info = {
     backgroundColor: state.background_color || '#272727',
   };
@@ -20,12 +17,6 @@ export const PersonalFormPage = () => {
       payload: { background_color: color },
     });
   };
-
-  const { data } = useQuery({
-    queryKey: ['user-info', user.token],
-    queryFn: () => fetchUserInfo(user.token),
-  })
-
   return (
     <>
       <div className="flex w-full gap-16">
@@ -40,7 +31,7 @@ export const PersonalFormPage = () => {
               seja publicada.
             </p>
           </div>
-          {data && <PersonalData user={data} />}
+          <PersonalData user={data} />
         </div>
         <div className="flex flex-col items-center gap-6">
           <UserEditImage src={state.avatar} height="12" width="12" />

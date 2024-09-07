@@ -3,6 +3,9 @@ import { produce } from 'immer';
 
 export const initEditReducer = () => {
   const page = useAppStore((state) => state.page);
+  const user = useAppStore((state) => state.user);
+  console.log('page', page);
+  console.log('userasd fasd fas d', user);
   return {
     page_name: page.page_name,
     expertises: page.expertises,
@@ -10,6 +13,8 @@ export const initEditReducer = () => {
     service_value: page.service_value,
     about_you: page.about_you,
     whatsapp: page.whatsapp,
+    city: user.city,
+    state: user.state,
     instagram: page.instagram,
     tiktok: page.tiktok,
     youtube: page.youtube,
@@ -34,6 +39,8 @@ export type TEditPersonalPageForm = {
   background_color: string;
   avatar: string;
   avatarFile: File;
+  city: string;
+  state: string;
 };
 
 export type TEditPersonalPageFormPartial = Partial<TEditPersonalPageForm>;
@@ -51,6 +58,8 @@ export type TEditPersonalPageFormActions = {
   | 'update-presentation_video'
   | 'update-background_color'
   | 'update-avatar'
+  | 'update-city'
+  | 'update-state'
   | 'update-expertises';
   payload: TEditPersonalPageFormPartial;
 };
@@ -121,6 +130,17 @@ export const editPersonalPageFormReducer = (
     case 'update-expertises':
       return produce(state, (draft) => {
         draft.expertises = action.payload.expertises ?? [];
+      });
+    case 'update-city':
+      return produce(state, (draft) => {
+        console.log('action.payload.city', action.payload.city);
+        if (action.payload.city)
+          draft.city = action.payload.city ?? '';
+      });
+    case 'update-state':
+      return produce(state, (draft) => {
+        if (action.payload.state)
+          draft.state = action.payload.state ?? '';
       });
     case 'update-all-fields':
       return produce(state, (draft) => {

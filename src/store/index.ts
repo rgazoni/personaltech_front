@@ -12,6 +12,9 @@ export const initialUser = {
   updatedAt: '',
   type: '',
   role: '',
+  uid_chat: '',
+  state: '',
+  city: '',
 };
 
 export interface User {
@@ -24,16 +27,21 @@ export interface User {
   updatedAt: string;
   type: string;
   role: string;
+  uid_chat: string;
+  state: string;
+  city: string;
 }
 
 interface UserSlice {
   user: User;
   updateUser: (user: User) => void;
+  updateUserField: (field: string, value: string) => void;
 }
 
 const createUserSlice: StateCreator<UserSlice, [], [], UserSlice> = (set) => ({
   user: initialUser,
   updateUser: (user) => set({ user }),
+  updateUserField: (field, value) => set((state) => ({ user: { ...state.user, [field]: value } })),
 });
 // << END USER SLICE
 
@@ -50,6 +58,9 @@ export const initialClient = {
   avatar: '',
   sawNot: false,
   md5Not: '',
+  uid_chat: '',
+  state: '',
+  city: '',
 };
 
 export interface Client {
@@ -64,6 +75,9 @@ export interface Client {
   avatar: string;
   sawNot: boolean;
   md5Not: string;
+  uid_chat: string;
+  state: string;
+  city: string;
 }
 
 interface ClientSlice {
@@ -98,6 +112,7 @@ export const initialPage = {
   avatar: '',
   avatarFile: new File([], ''),
   is_published: false,
+  personal_id: '',
 };
 
 export interface Page {
@@ -117,6 +132,7 @@ export interface Page {
   avatarFile: File;
   is_published: boolean;
   cref?: string;
+  personal_id: string;
 }
 
 interface PageSlice {

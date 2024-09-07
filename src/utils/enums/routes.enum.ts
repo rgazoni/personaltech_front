@@ -7,5 +7,6 @@ export enum Routes {
   SEARCH = "/search",
   SIGNUP_TRAINEE = "/signup",
   PROFILE = "/profile",
+  MESSAGE = "/message",
 }
 

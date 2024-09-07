@@ -1,7 +1,7 @@
-import { Layout } from "@/components/common/layout";
-import useAppStore from "@/store";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button"
+import { Layout } from '@/components/common/layout';
+import useAppStore from '@/store';
+import { useEffect, useReducer, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,21 +9,21 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { TraineeReqs, deleteInvite, getTraineeReqs, updateRating } from "@/api/ratings";
-import { AvatarProfileImg } from "@/components/common/avatar-profile-img";
-import { ExternalLink } from "lucide-react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast.hook";
+  TraineeReqs,
+  deleteInvite,
+  getTraineeReqs,
+  updateRating,
+} from '@/api/ratings';
+import { AvatarProfileImg } from '@/components/common/avatar-profile-img';
+import { ExternalLink } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast.hook';
 import {
   Dialog,
   DialogContent,
@@ -31,17 +31,19 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { initialState, passwordReducer } from '@/reducers/signup-validation';
+import { updateClientInfo, updatePassword } from '@/api/user';
 
-const Star = ({ selected, onClick }: { selected: any, onClick: any }) => (
+const Star = ({ selected, onClick }: { selected: any; onClick: any }) => (
   <div>
     <svg
       onClick={onClick}
       height="25px"
       width="25px"
       viewBox="0 0 25 25"
-      fill={selected ? "#fae100" : "#f0f1f2"}
+      fill={selected ? '#fae100' : '#f0f1f2'}
       strokeWidth="2"
       strokeLinejoin="round"
     >
@@ -50,7 +52,13 @@ const Star = ({ selected, onClick }: { selected: any, onClick: any }) => (
   </div>
 );
 
-const RateStar = ({ totalStars = 5, onRatingChange }: { totalStars: number, onRatingChange: (num: number) => void }) => {
+const RateStar = ({
+  totalStars = 5,
+  onRatingChange,
+}: {
+  totalStars: number;
+  onRatingChange: (num: number) => void;
+}) => {
   const [selectedStars, setSelectedStars] = useState(0);
 
   const handleStarClick = (index: number) => {
@@ -73,8 +81,15 @@ const RateStar = ({ totalStars = 5, onRatingChange }: { totalStars: number, onRa
   );
 };
 
-const Rate = ({ personal, onDialog, canPop }:
-  { personal: TraineeReqs, onDialog: (u: boolean) => void, canPop: () => void }) => {
+const Rate = ({
+  personal,
+  onDialog,
+  canPop,
+}: {
+  personal: TraineeReqs;
+  onDialog: (u: boolean) => void;
+  canPop: () => void;
+}) => {
   const [rating, setRating] = useState(0);
   const { notify } = useToast();
 
@@ -87,18 +102,24 @@ const Rate = ({ personal, onDialog, canPop }:
     },
     onError: (error) => {
       console.error('Error deleting invite', error);
-    }
+    },
   });
   const cl = useAppStore((state) => state.client);
 
   return (
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle className="flex gap-4 items-center">
-          <AvatarProfileImg src={personal.avatar} alt={personal.page_name} size={50} />
+        <DialogTitle className="flex items-center gap-4">
+          <AvatarProfileImg
+            src={personal.avatar}
+            alt={personal.page_name}
+            size={50}
+          />
           <div>
             <span className="text-xl">Avaliação</span>
-            <p className="text-xs font-light text-muted">Deixe sua avaliação para {personal.page_name}</p>
+            <p className="text-xs font-light text-muted">
+              Deixe sua avaliação para {personal.page_name}
+            </p>
           </div>
         </DialogTitle>
       </DialogHeader>
@@ -107,21 +128,23 @@ const Rate = ({ personal, onDialog, canPop }:
           e.preventDefault();
           const formData = new FormData(e.target as HTMLFormElement);
           //TODO FIX DATE FORMAT
-          const userResponseDate = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+          const userResponseDate = new Date().toLocaleString('pt-BR', {
+            timeZone: 'America/Sao_Paulo',
+          });
           const dateObject = new Date(userResponseDate);
           const formValues = {
             personal_id: personal.id,
             trainee_id: cl.id,
             rating,
-            request: "pending",
-            comment: formData.get('comments') as string || '',
+            request: 'pending',
+            comment: (formData.get('comments') as string) || '',
             userResponseAt: dateObject,
           };
           mutateRate.mutate(formValues);
         }}
       >
         <div className="grid gap-4 py-4">
-          <div className="flex items-start gap-4 flex-col w-fit">
+          <div className="flex w-fit flex-col items-start gap-4">
             <Label htmlFor="name" className="text-left">
               Qualidade do serviço
             </Label>
@@ -139,12 +162,14 @@ const Rate = ({ personal, onDialog, canPop }:
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={() => onDialog(false)}>Avaliar</Button>
+          <Button type="submit" onClick={() => onDialog(false)}>
+            Avaliar
+          </Button>
         </DialogFooter>
       </form>
     </DialogContent>
-  )
-}
+  );
+};
 
 const Invites = () => {
   const client = useAppStore((state) => state.client);
@@ -177,7 +202,10 @@ const Invites = () => {
   });
 
   const handleDelete = (personal_id: string) => {
-    mutateDeleteInvite.mutate({ trainee_id: client.id, personal_id: personal_id });
+    mutateDeleteInvite.mutate({
+      trainee_id: client.id,
+      personal_id: personal_id,
+    });
     setTraineeReqs((prevReqs) => prevReqs.filter((r) => r.id !== personal_id));
   };
 
@@ -197,22 +225,26 @@ const Invites = () => {
         // Show trainee requests if available
         traineeReqs.map((req) => (
           <CardContent key={req.id} className="space-y-2">
-            <div className="flex flex-col bg-secondary-foreground p-5 gap-4 border rounded-lg w-72">
+            <div className="flex w-72 flex-col gap-4 rounded-lg border bg-secondary-foreground p-5">
               <div className="flex w-full">
-                <div className="flex gap-2 items-center w-full">
-                  <AvatarProfileImg src={req.avatar} alt={req.page_name} size={64} />
+                <div className="flex w-full items-center gap-2">
+                  <AvatarProfileImg
+                    src={req.avatar}
+                    alt={req.page_name}
+                    size={64}
+                  />
                   <div>
-                    <h5 className="text-secondary text-xs">{req.page_name}</h5>
-                    <p className="text-muted text-xs">Avaliação Pendente</p>
+                    <h5 className="text-xs text-secondary">{req.page_name}</h5>
+                    <p className="text-xs text-muted">Avaliação Pendente</p>
                   </div>
                 </div>
                 <ExternalLink
                   size={14}
-                  className="text-secondary cursor-pointer"
+                  className="cursor-pointer text-secondary"
                   onClick={() => navigate('/u/' + req.url)}
                 />
               </div>
-              <div className="flex gap-3 w-full justify-end">
+              <div className="flex w-full justify-end gap-3">
                 <Button
                   variant="ghost"
                   className="cursor-pointer text-xs"
@@ -224,13 +256,17 @@ const Invites = () => {
                   <DialogTrigger asChild>
                     <Button
                       variant="default"
-                      className="cursor-pointer text-xs px-8"
+                      className="cursor-pointer px-8 text-xs"
                       onClick={() => setIsDialogOpen(true)}
                     >
                       Avaliar
                     </Button>
                   </DialogTrigger>
-                  <Rate personal={req} onDialog={setIsDialogOpen} canPop={() => handlePop(req.id)} />
+                  <Rate
+                    personal={req}
+                    onDialog={setIsDialogOpen}
+                    canPop={() => handlePop(req.id)}
+                  />
                 </Dialog>
               </div>
             </div>
@@ -239,18 +275,20 @@ const Invites = () => {
       ) : (
         // Show message if there are no invites
         <div className="col-span-3">
-          <p className="text-center pb-8 pt-3 text-muted">Você ainda não possui convites 😕</p>
+          <p className="pb-8 pt-3 text-center text-muted">
+            Você ainda não possui convites 😕
+          </p>
         </div>
       )}
     </Card>
   );
 };
 
-
 export const Profile = () => {
   const [greeting, setGreeting] = useState('');
   const client = useAppStore((state) => state.client);
   const [searchParams, _] = useSearchParams();
+  const { notify } = useToast();
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -266,55 +304,191 @@ export const Profile = () => {
 
   const tab = searchParams.get('tab') || 'info';
 
+  const [{ len, equals }, dispatch] = useReducer(passwordReducer, initialState);
+  const mutatePsswd = useMutation({
+    mutationFn: updatePassword,
+    mutationKey: ['updatePsswd', client.id],
+    onSuccess: () => {
+      notify('success', 'Avaliação enviada com sucesso 🚀');
+    },
+    onError: (error) => {
+      console.error('Error deleting invite', error);
+      notify('error', 'Erro ao alterar senha 😕, confira os campos e tente novamente.');
+    },
+  });
+  const birthdate = new Date(client.birthdate).toISOString().substring(0, 10);
+
+
+  const mutateTInfo = useMutation({
+    mutationFn: updateClientInfo,
+    mutationKey: ['update', client.id],
+    onSuccess: () => {
+      notify('success', 'Informações atualizadas com sucesso 🚀');
+    },
+    onError: (error) => {
+      console.error('Error updating client info', error);
+      notify('error', 'Erro ao atualizar informações 😕, confira os campos e tente novamente.');
+    },
+  });
+
   return (
-    <Layout>
-      <div className="flex gap-12 justify-between px-16 flex-col">
-        <div>
-          <h1 className="text-3xl text-secondary font-light">{greeting} <span>{client.full_name},</span></h1>
-          <p className="text-muted pt-2">Que bom tê-la aqui de novo!</p>
+    <div className='h-dvh'>
+      <Layout className='h-fit flex flex-col gap-12'>
+        <div className="flex flex-col justify-between gap-4 px-24 h-full flex-grow">
+          <div>
+            <h1 className="text-3xl font-light text-secondary">
+              {greeting} <span>{client.full_name},</span>
+            </h1>
+            <p className="pt-2 text-muted">Que bom tê-la aqui de novo!</p>
+          </div>
+
+          <Tabs defaultValue={tab} className="w-full h-full flex flex-col">
+            <TabsList className="grid w-full grid-cols-3 bg-primary text-white">
+              <TabsTrigger value="info">Minhas Informações</TabsTrigger>
+              <TabsTrigger value="invites">Convites</TabsTrigger>
+              <TabsTrigger value="password">Alteração de senha</TabsTrigger>
+            </TabsList>
+            <TabsContent value="info" className="mt-10">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Informações Pessoais</CardTitle>
+                  <CardDescription>
+                    Atualize suas informações pessoais.
+                  </CardDescription>
+                </CardHeader>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target as HTMLFormElement);
+                    const formValues = {
+                      email: formData.get('email') as string,
+                      birthdate: formData.get('birthdate') as string,
+                      full_name: formData.get('name') as string,
+                      state: formData.get('state') as string,
+                      city: formData.get('city') as string,
+                    };
+                    console.log(formValues);
+                    mutateTInfo.mutate({
+                      id: client.id,
+                      client: formValues
+                    });
+                  }}
+                >
+                  <CardContent className="space-y-2">
+                    <div className="space-y-1">
+                      <Label htmlFor="name">Nome</Label>
+                      <Input id="name" name='name' defaultValue={client.full_name} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-5">
+                      <div className="space-y-1">
+                        <Label htmlFor="email">Email</Label>
+                        <Input id="email" name='email' defaultValue={client.email} disabled={true} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="birthdate">Data de Nascimento</Label>
+                        <Input id="birthdate" name='birthdate' defaultValue={birthdate} type='date' />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-5">
+                      <div className="space-y-1">
+                        <Label htmlFor="state">Estado</Label>
+                        <Input id="state" defaultValue={client.state} name='state' />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="city">Cidade</Label>
+                        <Input id="city" defaultValue={client.city} name='city' />
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button>Atualizar informações</Button>
+                  </CardFooter>
+                </form>
+              </Card>
+            </TabsContent>
+            <TabsContent value="invites" className="mt-10 h-full grow">
+              <Invites />
+            </TabsContent>
+            <TabsContent value="password" className="mt-10">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Alteração de senha</CardTitle>
+                  <CardDescription>Altere sua senha.</CardDescription>
+                </CardHeader>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target as HTMLFormElement);
+                    const formValues = {
+                      old_password: formData.get('old_password') as string,
+                      new_password: formData.get('new_password') as string,
+                      trainee_id: client.id,
+                    };
+                    mutatePsswd.mutate(formValues);
+                  }}
+                >
+                  <CardContent className="space-y-2">
+                    <div className="space-y-1">
+                      <Label htmlFor="old_password">Senha antiga</Label>
+                      <Input
+                        id="old_password"
+                        type="password"
+                        name="old_password"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-5">
+                      <div className="space-y-1">
+                        <Label htmlFor="new_password">Nova senha</Label>
+                        <Input
+                          id="new_password"
+                          type="password"
+                          name="new_password"
+                          onChange={(e) =>
+                            dispatch({
+                              type: 'password-length',
+                              payload: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="confirm_new_password">
+                          Confirmar nova senha
+                        </Label>
+                        <Input
+                          id="confirm_new_password"
+                          type="password"
+                          onChange={(e) =>
+                            dispatch({
+                              type: 'password-equals',
+                              payload: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col pt-4 text-sm font-light text-tertiary">
+                      <div className="flex gap-2">
+                        <p>Senha deve conter no mínimo 8 caracteres</p>
+                        {len && <span>✅</span>}
+                      </div>
+                      <div className="flex gap-2">
+                        <p>Ambas as senhas devem ser iguais</p>
+                        {equals && <span>✅</span>}
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button type="submit" disabled={!len || !equals}>
+                      Atualizar senha
+                    </Button>
+                  </CardFooter>
+                </form>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
-
-        <Tabs defaultValue={tab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 text-white bg-primary">
-            <TabsTrigger value="info">Minhas Informações</TabsTrigger>
-            <TabsTrigger value="invites">Convites</TabsTrigger>
-            <TabsTrigger value="messages">Mensagens</TabsTrigger>
-          </TabsList>
-          <TabsContent value="info" className="mt-10">
-            <Card>
-              <CardHeader>
-                <CardTitle>Informações Pessoais</CardTitle>
-                <CardDescription>
-                  Atualize suas informações pessoais.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="space-y-1">
-                  <Label htmlFor="name">Nome</Label>
-                  <Input id="name" />
-                </div>
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="space-y-1">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="email">Data de Nascimento</Label>
-                    <Input id="email" />
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button>Atualizar informações</Button>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-          <TabsContent value="invites" className="mt-10">
-            <Invites />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </Layout>
+      </Layout>
+    </div>
   );
-}
-
+};

@@ -24,6 +24,8 @@ export const SigninInfo = () => {
             email: formData.get('email') as string,
             birthdate: formData.get('birthdate') as string,
             password: formData.get('password') as string,
+            state: formData.get('state') as string,
+            city: formData.get('city') as string,
           };
           if (!isValidEmail(obj.email)) {
             setEmail(false);
@@ -54,24 +56,40 @@ export const SigninInfo = () => {
           type="date"
           name="birthdate"
         />
-        <LabeledInput
-          id="password"
-          name="password"
-          label="Senha"
-          type="password"
-          onChange={(e) =>
-            dispatch({ type: 'password-length', payload: e.target.value })
-          }
-        />
-        <LabeledInput
-          id="confirm-password"
-          name="confirm-password"
-          label="Confirmar senha"
-          type="password"
-          onChange={(e) =>
-            dispatch({ type: 'password-equals', payload: e.target.value })
-          }
-        />
+
+        <div className='grid-cols-2 grid gap-3'>
+          <LabeledInput
+            id="state"
+            name="state"
+            label="Estado"
+          />
+          <LabeledInput
+            id="city"
+            name="city"
+            label="Cidade"
+          />
+        </div>
+
+        <div className='grid-cols-2 grid gap-3'>
+          <LabeledInput
+            id="password"
+            name="password"
+            label="Senha"
+            type="password"
+            onChange={(e) =>
+              dispatch({ type: 'password-length', payload: e.target.value })
+            }
+          />
+          <LabeledInput
+            id="confirm-password"
+            name="confirm-password"
+            label="Confirmar senha"
+            type="password"
+            onChange={(e) =>
+              dispatch({ type: 'password-equals', payload: e.target.value })
+            }
+          />
+        </div>
 
         <div className="mt-4 flex flex-col text-sm font-light text-tertiary">
           <div className="flex gap-2">

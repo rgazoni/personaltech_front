@@ -7,7 +7,7 @@ export type UrlAvailabilityResponse = {
 };
 
 export type CreatePage = {
-  user_id: string;
+  personal_id: string;
   page_name: string;
   url: string;
 }
@@ -19,7 +19,6 @@ export const urlAvailabilityPage = async (page_url: string): Promise<UrlAvailabi
   return res.data;
 }
 
-
 export const createPage = async (page: CreatePage): Promise<CreatePage> => {
   const res = await api.post('pages/create', page);
   return res.data;
@@ -27,33 +26,54 @@ export const createPage = async (page: CreatePage): Promise<CreatePage> => {
 
 export const updatePage = async (page: UpdatePage): Promise<Page> => {
   const user = useAppStore.getState().user;
-
-  const res = await api.post('pages/update',
+  const res = await api.put('pages/update',
     {
-      token: user.token,
+      token: user.id,
       ...page
     },
     {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-    }
+    },
   );
   return res.data;
 }
 
-export const getPage = async (page_url: string): Promise<Page> => {
+export type GetPage = Page & {
+  uid_chat: string;
+  city: string;
+  state: string;
+  ratings: {
+    total: number;
+    average: number;
+  };
+}
+
+export const getPage = async (page_url: string): Promise<GetPage> => {
   const res = await api.get(`pages/${page_url}`);
   return res.data;
 }
 
-export const getPageByToken = async (token: string): Promise<Page> => {
-  const res = await api.get(`pages/edit/${token}`);
-  console.log(res.data);
+export const getPageById = async (token: string): Promise<Page> => {
+  const res = await api.get(`pages/id/${token}`);
   return res.data;
 }
 
-export const fetchTrainers = async (): Promise<Page[]> => {
-  const res = await api.get('pages/search');
+export const fetchTrainers = async (): Promise<GetPage[]> => {
+  const res = await api.get('pages');
+  return res.data;
+}
+
+export const fetchPersonalSearch = async (expertises?: string[], name?: string): Promise<GetPage[]> => {
+  const query = new URLSearchParams();
+  if (expertises && expertises.length > 0) {
+    query.append('expertises', expertises.join(','));
+  }
+  if (name && name.length > 0) {
+    query.append('name', name);
+  }
+  console.log(query.toString());
+  const res = await api.get(`pages/search?${query.toString()}`);
   return res.data;
 }

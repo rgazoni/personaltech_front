@@ -1,7 +1,7 @@
 import { LabeledInput } from '@/components/common/labeled-input';
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { fetchClients } from '@/api/user';
+import { fetchTrainees } from '@/api/user';
 import { Button } from '@/components/ui/button';
 import { Star, Trash, X } from 'lucide-react';
 import {
@@ -15,12 +15,14 @@ import { AvatarProfileImg } from '@/components/common/avatar-profile-img';
 import { useToast } from '@/hooks/use-toast.hook';
 import {
   PersonalReqs,
+  Rating,
   RatingInfo,
   createInvite,
   deleteInvite,
   getPersonalReqs,
   getRatings,
   updateRating,
+  updateRequest,
 } from '@/api/ratings';
 
 const Loader = () => (
@@ -43,7 +45,7 @@ const RatingCard = ({
   const user = useAppStore((state) => state.user);
 
   const mutateDecision = useMutation({
-    mutationFn: updateRating,
+    mutationFn: updateRequest,
     mutationKey: ['updateRating', data.trainee_id],
     onSuccess: (data) => {
       console.log('Updated', data);
@@ -157,7 +159,7 @@ export const PersonalRatingPage = () => {
   });
 
   const mutateRating = useMutation({
-    mutationFn: fetchClients,
+    mutationFn: fetchTrainees,
     mutationKey: ['fetchClients', traineeInvite],
     onSuccess: (data) => {
       setShowDropdown(true); // Show dropdown with results
@@ -187,22 +189,26 @@ export const PersonalRatingPage = () => {
     mutationFn: deleteInvite,
     mutationKey: ['deleteInvite'],
     onSuccess: (data) => {
-      console.log('Deleted', data);
       notify('success', 'Convite deletado com sucesso ✉️');
+      if ((data as Rating).trainee_id !== undefined)
+        setPendingReqs(
+          pendingReqs.filter((r) => r.id !== (data as Rating).trainee_id)
+        );
     },
     onError: (error) => {
+      notify('error', 'Não foi possível deletar o convite. Tente novamente.');
       console.error('Error deleting invite', error);
     },
   });
 
   const { data: pendingData, isLoading: isLoadingPending } = useQuery({
     queryKey: ['pendingReqs', user.token],
-    queryFn: () => getRatings(user.token, 'pending'),
+    queryFn: () => getRatings({ token: user.id, status: 'pending' }),
   });
 
   const { data: acceptedData, isLoading: isLoadingAccepted } = useQuery({
     queryKey: ['acceptedReqs', user.token],
-    queryFn: () => getRatings(user.token, 'accepted'),
+    queryFn: () => getRatings({ token: user.id, status: 'accepted' }),
   });
 
   useEffect(() => {
@@ -336,9 +342,6 @@ export const PersonalRatingPage = () => {
                           trainee_id: req.id,
                           personal_id: user.id,
                         });
-                        setPendingReqs(
-                          pendingReqs.filter((r) => r.id !== req.id)
-                        );
                       }}
                     />
                   </div>

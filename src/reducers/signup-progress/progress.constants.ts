@@ -15,5 +15,7 @@ export const initialState = {
     cref: '',
     type: '',
     name: '',
+    state: '',
+    city: '',
   },
 };

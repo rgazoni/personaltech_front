@@ -11,13 +11,11 @@ import { useNavigate } from 'react-router-dom';
 export const PersonalData = ({ user }: { user: User }) => {
   const { state } = useEditPersonalContext();
   const updatePageFields = useAppStore((state) => state.updatePartialPage);
+  const updateUserField = useAppStore((state) => state.updateUserField);
   const page = useAppStore((state) => state.page);
   const navigate = useNavigate();
 
   const { notify } = useToast();
-
-  console.log('page', page);
-  console.log('user', user);
 
   const aboutYou = {
     page_name: state.page_name,
@@ -25,6 +23,8 @@ export const PersonalData = ({ user }: { user: User }) => {
     profession: state.profession,
     service_value: state.service_value,
     about_you: state.about_you,
+    city: state.city,
+    state: state.state,
   };
 
   const socialMedia = {
@@ -40,6 +40,8 @@ export const PersonalData = ({ user }: { user: User }) => {
     onSuccess: (data) => {
       // Handle success (e.g., show a success message)
       updatePageFields(data);
+      updateUserField('city', state.city);
+      updateUserField('state', state.state);
       notify('success', 'Página criada com sucesso');
       navigate('/u/' + data.url);
     },
@@ -63,8 +65,10 @@ export const PersonalData = ({ user }: { user: User }) => {
           about_you: formData.get('about_you') as string,
           whatsapp: formData.get('whatsapp') as string,
           instagram: formData.get('instagram') as string,
-          youtube: formData.get('youtube') as string,
+          tiktok: formData.get('tiktok') as string,
           presentation_video: formData.get('presentation_video') as string,
+          city: state.city,
+          state: state.state,
           background_color: state.background_color,
           avatarFile: state.avatarFile,
           is_published: true,
@@ -85,7 +89,6 @@ export const PersonalData = ({ user }: { user: User }) => {
             !state.profession ||
             !state.service_value ||
             !state.about_you ||
-            !state.whatsapp ||
             state.expertises.length === 0 ||
             user.is_cref_verified !== 'valid'
           }

@@ -4,6 +4,9 @@ import { useParams } from "react-router-dom";
 import { PersonalPreviewPage } from "./preview";
 import { EditPersonalProvider } from "@/providers/edit-personal-page-provider";
 import { PersonalRatingPage } from "./rating";
+import useAppStore from "@/store";
+import { useQuery } from "@tanstack/react-query";
+import { fetchPersonalInfo } from "@/api/user";
 
 export const EditPersonalPage = () => {
   let params = useParams<{ path: string }>();
@@ -15,14 +18,23 @@ export const EditPersonalPage = () => {
     path = params.path;
   }
 
+  const user = useAppStore((state) => state.user);
+  const { data, isPending } = useQuery({
+    queryKey: ['personal-info', user.token],
+    queryFn: () => fetchPersonalInfo(user.id),
+  })
+
   const render = () => {
     return (
       <EditPersonalProvider>
-        <PersonalEditionPage>
-          {path === 'preview' && <PersonalPreviewPage />}
-          {path === 'form' && <PersonalFormPage />}
-          {path === 'rating' && <PersonalRatingPage />}
-        </PersonalEditionPage>
+        {isPending ? <p>Carregando...</p> :
+          data &&
+          <PersonalEditionPage data={data}>
+            {path === 'preview' && <PersonalPreviewPage />}
+            {path === 'form' && <PersonalFormPage data={data} />}
+            {path === 'rating' && <PersonalRatingPage />}
+          </PersonalEditionPage>
+        }
       </EditPersonalProvider>
     );
   }

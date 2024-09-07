@@ -8,78 +8,381 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
-import { useQuery } from '@tanstack/react-query';
-import { fetchTrainers } from '@/api/page';
-import React from 'react';
+} from '@/components/ui/pagination';
+import { useMutation } from '@tanstack/react-query';
+import { GetPage, fetchPersonalSearch } from '@/api/page';
+import React, { useEffect, useState } from 'react';
 import { ProfilePersonalCard } from './profile-personal-card';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ChevronDownIcon, X } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { fetchCities } from '@/api/generic';
+import { expertisesOpts } from '@/pages/private/edit-personal-page/form/expertises-opts';
+
+const DropdownUnique = ({
+  title,
+  data,
+  onSelect,
+}: {
+  title: string;
+  data: { id: string; label: string }[];
+  onSelect?: (category: string) => void;
+}) => {
+  // State to track selected item (only one item can be selected)
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+
+  // Handle item selection
+  const handleSelect = (id: string) => {
+    const newSelectedItem = selectedItem === id ? null : id; // Toggle selection
+
+    setSelectedItem(newSelectedItem);
+
+    if (onSelect && newSelectedItem) {
+      onSelect(newSelectedItem); // Call onSelectRating with the selected category
+    }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button className="flex items-center gap-1 rounded-full">
+          <span>{title}</span>
+          <ChevronDownIcon size={16} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-44" align="start">
+        {data.map((item) => (
+          <DropdownMenuCheckboxItem
+            key={item.id}
+            checked={selectedItem === item.id} // Show checked status for the selected item
+            onCheckedChange={() => handleSelect(item.id)} // Handle selection
+          >
+            {item.label}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const DropdownSelectionCategories = ({
+  title,
+  data,
+  setSelectedItems,
+  selectedItems
+}: {
+  title: string;
+  data: { id: string; label: string }[];
+  setSelectedItems: (categories: string[]) => void;
+  selectedItems: string[];
+}) => {
+  // State to track selected items
+
+  // Handle item selection
+  const handleSelect = (id: string) => {
+    const updatedSelection = selectedItems.includes(id)
+      ? selectedItems.filter((itemId) => itemId !== id)
+      : [...selectedItems, id];
+
+    setSelectedItems(updatedSelection);
+
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button className="flex items-center gap-1 rounded-full">
+          <span>{title}</span>
+          <ChevronDownIcon size={16} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-44" align="start">
+        {data.map((item) => (
+          <DropdownMenuCheckboxItem
+            key={item.id}
+            checked={selectedItems.includes(item.label)} // Show checked status
+            onCheckedChange={() => handleSelect(item.label)} // Handle selection
+          >
+            <div className="flex items-center gap-2">
+              {item.label}
+            </div>
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const ComboboxCity = ({
+  onSelectCity,
+}: {
+  onSelectCity?: (cities: string[]) => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [cities, setCities] = useState([]);
+
+  // Debouncing the input to avoid frequent API calls
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      mutate.mutate();
+    }, 300); // 300ms debounce
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
+  const mutate = useMutation({
+    mutationFn: () => fetchCities(searchTerm),
+    mutationKey: ['cities', searchTerm],
+    onSuccess: (data) => {
+      setCities(data);
+    },
+  });
+
+  const handleSelectCity = (cityName: string) => {
+    const sel = selectedCities.includes(cityName)
+      ? selectedCities.filter((city) => city !== cityName)
+      : [...selectedCities, cityName];
+
+    setSelectedCities((prevSelected) =>
+      prevSelected.includes(cityName)
+        ? prevSelected.filter((city) => city !== cityName)
+        : [...prevSelected, cityName]
+    );
+    if (onSelectCity) onSelectCity(sel);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          role="combobox"
+          aria-expanded={open}
+          className="flex items-center gap-1 rounded-full"
+        >
+          <span>Cidade</span>
+          <ChevronDownIcon size={16} />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[300px] p-0" align="start">
+        <Command>
+          <CommandInput
+            placeholder="Procurar cidade..."
+            value={searchTerm}
+            onValueChange={(value: string) => setSearchTerm(value)}
+          />
+          <CommandList>
+            {mutate.isPending ? (
+              <CommandEmpty>Loading cities...</CommandEmpty>
+            ) : cities.length === 0 ? (
+              <CommandEmpty>Cidade não encontrada</CommandEmpty>
+            ) : (
+              <CommandGroup>
+                {cities.map((city: any) => (
+                  <CommandItem
+                    key={city.id}
+                    value={city.nome}
+                    onSelect={() =>
+                      handleSelectCity(
+                        city.nome +
+                        ' - ' +
+                        city.microrregiao.mesorregiao.UF.sigla
+                      )
+                    }
+                  >
+                    <Check
+                      className={cn(
+                        'mr-2 h-4 w-4',
+                        selectedCities.includes(
+                          city.nome +
+                          ' -' +
+                          city.microrregiao.mesorregiao.UF.sigla
+                        )
+                          ? 'opacity-100'
+                          : 'opacity-0'
+                      )}
+                    />
+                    {city.nome} - {city.microrregiao.mesorregiao.UF.sigla}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 export const Search = () => {
+  //TODO already here when select a city
+  const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedRating, setSelectedRating] = useState<string | null>(null);
+  const [selectedGender, setSelectedGender] = useState<string | null>(null);
+  const [name, setName] = useState<string | null>(null);
 
-  const { data, isPending, isError } = useQuery({
-    queryKey: ['trainers'],
-    queryFn: fetchTrainers,
+  const [pages, setPages] = useState<GetPage[]>([]);
+
+  const mutateSearch = useMutation({
+    mutationFn: ({ ex, name }: { ex?: string[], name?: string }) => fetchPersonalSearch(ex, name),
+    mutationKey: ['trainers', selectedCategories, name],
+    gcTime: 1000 * 60 * 60,
+    onSuccess: (data) => {
+      setPages(data);
+    },
   });
 
   React.useEffect(() => {
-    console.log(data);
-  }, [data]);
+    console.log('Selected filters:');
+    console.log(selectedCities);
+    console.log(selectedCategories);
+    console.log(selectedRating);
+    console.log(selectedGender);
+  }, [selectedCities, selectedCategories, selectedRating, selectedGender]);
+
+  React.useEffect(() => {
+    mutateSearch.mutate({
+      ex: selectedCategories,
+    });
+  }, [selectedCategories]);
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative h-full w-full">
       {/* Background circles */}
       <div className="circle modal-top-left"></div>
-      <div className="circle modal-bottom-right top-1/2 right-0"></div>
+      <div className="circle modal-bottom-right right-0 top-1/2"></div>
 
       {/* Main content */}
       <div className="relative z-10">
         <Layout>
-          <div className="mx-auto flex flex-col gap-8 w-fit">
-            <h1 className="text-center text-6xl font-bold text-secondary">Encontre seu treinador</h1>
-            <div className="rounded-full bg-tertiary-foreground border border-primary relative">
-              <input
-                type="text"
-                placeholder="Qual é o nome ou modalidade do treinador?"
-                className="w-full h-12 pl-4 rounded-full bg-tertiary-foreground focus:outline-none"
+          <div className="mx-auto flex w-fit flex-col gap-3">
+            <div className="mx-auto flex w-fit flex-col gap-8">
+              <h1 className="text-center text-6xl font-bold text-secondary">
+                Encontre seu treinador
+              </h1>
+              <div className="relative rounded-full border border-primary bg-tertiary-foreground">
+                <input
+                  type="text"
+                  placeholder="Qual é o nome ou modalidade do treinador?"
+                  className="h-12 w-full rounded-full bg-tertiary-foreground pl-4 focus:outline-none"
+                  onChange={(e) => setName(e.target.value)}
+                  onBlur={(e) => {
+                    if (e.target.value === '') {
+                      mutateSearch.mutate({
+                        name: '',
+                        ex: selectedCategories,
+                      });
+                    }
+                  }}
+                />
+                <Button className="absolute right-1 top-1 w-32 rounded-full bg-primary"
+                  onClick={() => {
+                    mutateSearch.mutate({
+                      name: name || '',
+                      ex: selectedCategories,
+                    });
+                  }}
+                >
+                  Buscar
+                </Button>
+              </div>
+            </div>
+            <div className="mx-auto flex gap-3">
+              <DropdownSelectionCategories
+                title="Categorias"
+                data={expertisesOpts}
+                setSelectedItems={setSelectedCategories}
+                selectedItems={selectedCategories}
               />
-              <Button className="absolute right-1 top-1 w-32 bg-primary rounded-full">
-                Buscar
-              </Button>
+              <ComboboxCity onSelectCity={setSelectedCities} />
+              <DropdownUnique
+                title="Avaliação"
+                data={[
+                  { id: 'most_popular', label: 'Mais populares' },
+                  { id: 'highest_rating', label: 'Melhor avaliação' },
+                  { id: 'lowest_price', label: 'Menor preço' },
+                ]}
+                onSelect={setSelectedRating}
+              />
+              <DropdownUnique
+                title="Gênero"
+                data={[
+                  { id: 'male', label: 'Masculino' },
+                  { id: 'female', label: 'Feminino' },
+                ]}
+                onSelect={setSelectedGender}
+              />
             </div>
           </div>
 
-          <div className="flex flex-col gap-8 mt-24 items-centeri flex-grow px-32">
-            {isPending ? (
-              <p>Carregando...</p>
-            ) :
-              isError ? (
-                <p>Sem resultados</p>
-              ) :
-                (
-                  <>
-                    {
-                      data.map((trainer) => (
-                        <ProfilePersonalCard key={trainer.url} page={trainer} />
-                      ))
-                    }
-                    <Pagination>
-                      <PaginationContent>
-                        <PaginationItem>
-                          <PaginationPrevious href="#" />
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationLink href="#">1</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationNext href="#" />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
-                  </>
-                )}
+          <div className='mt-8 flex gap-3 py-4 px-5 items-center flex-wrap max-w-[800px] mx-auto'>
+            {selectedCategories.length > 0 && (
+              <>
+                <div>
+                  <h2 className='text-xs text-secondary font-light'>Filtros selecionados:</h2>
+                </div>
+                <div className='flex gap-2 flex-wrap'>
+                  {selectedCategories.map((category) => (
+                    <div key={category} className='rounded-full bg-muted-foreground w-fit px-2 flex gap-1 py-1'>
+                      <span key={category} className='text-xs text-white text-nowrap'>{category}</span>
+                      <X size={16} className='text-white cursor-pointer'
+                        onClick={() => setSelectedCategories(selectedCategories.filter((c) => c !== category))} />
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="items-centeri mt-12 flex flex-grow flex-col gap-8 px-32">
+            {mutateSearch.isError ? (
+              <p>Sem resultados</p>
+            ) : (
+              <>
+                {pages.map((trainer) => (
+                  <ProfilePersonalCard key={trainer.url} page={trainer} />
+                ))}
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious href="#" />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLink href="#">1</PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationNext href="#" />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </>
+            )}
           </div>
         </Layout>
       </div>

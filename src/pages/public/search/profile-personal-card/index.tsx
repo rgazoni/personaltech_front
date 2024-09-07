@@ -1,7 +1,7 @@
+import { GetPage } from '@/api/page';
 import { UserImage } from '@/components/common/user-image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Page } from '@/store';
 import { Star } from 'lucide-react';
 import { useId } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -11,10 +11,11 @@ export const ProfilePersonalCard = ({
   page,
 }: {
   key: string;
-  page: Page;
+  page: GetPage;
 }) => {
   const id = useId() + key;
   const navigate = useNavigate();
+  console.log(page);
   return (
     <div key={id} className="flex gap-4 max-h-min">
       <div className="flex w-full gap-8">
@@ -26,13 +27,21 @@ export const ProfilePersonalCard = ({
             <h2 className="text-3xl font-bold text-secondary">
               {page.page_name}
             </h2>
-            <div className="flex">
-              <Star size={24} fill="#FFC728" strokeWidth={0} />
-              <Star size={24} fill="#FFC728" strokeWidth={0} />
-              <Star size={24} fill="#FFC728" strokeWidth={0} />
-              <Star size={24} fill="#FFC728" strokeWidth={0} />
-              <Star size={24} fill="#FFC728" strokeWidth={0} />
+            <div className='flex items-center gap-2'>
+              {page!.ratings && page!.ratings.total !== 0 && (
+                <div className='flex gap-2 items-center'>
+                  <p className={`text-nowrap text-[10px] font-light`}>
+                    {page!.ratings.average.toFixed(1)} / 5
+                  </p>
+                  <div className='flex gap-1'>
+                    {Array.from({ length: page!.ratings.average }, (_, index) => (
+                      <Star key={index} size={16} strokeWidth={0} fill="#FFC728" />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
+
           </div>
           <div className="flex flex-wrap gap-2 pr-28">
             {page.expertises.map((expertise, index) => (

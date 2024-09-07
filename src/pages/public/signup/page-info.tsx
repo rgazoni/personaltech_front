@@ -87,7 +87,7 @@ export const PageInfo = () => {
           e.preventDefault();
           const formData = new FormData(e.target as HTMLFormElement);
           const obj = {
-            user_id: user.id,
+            personal_id: user.id,
             page_name: formData.get('page-name') as string,
             url: formData.get('page-url') as string,
           };

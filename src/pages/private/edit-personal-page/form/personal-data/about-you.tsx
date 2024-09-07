@@ -13,6 +13,8 @@ type AboutYouProps = {
     profession: string;
     service_value: string;
     about_you: string;
+    city: string;
+    state: string;
   };
 };
 
@@ -100,7 +102,7 @@ export const AboutYou = ({ data }: AboutYouProps) => {
         />
       </div>
       <LabeledInput
-        label="Qual o valor do seu serviço? *"
+        label="Qual o valor do seu serviço por aula? *"
         name="service_value"
         id="service_value"
         defaultValue={data.service_value}
@@ -112,6 +114,32 @@ export const AboutYou = ({ data }: AboutYouProps) => {
           })
         }
       />
+      <div className='grid-cols-2 grid gap-2'>
+        <LabeledInput
+          label="Cidade"
+          name="city"
+          id="city"
+          defaultValue={data.city}
+          onBlur={(e) => {
+            dispatch({
+              type: 'update-city',
+              payload: { city: e.target.value },
+            })
+          }}
+        />
+        <LabeledInput
+          label="Estado"
+          name="state"
+          id="state"
+          defaultValue={data.state}
+          onBlur={(e) =>
+            dispatch({
+              type: 'update-state',
+              payload: { state: e.target.value },
+            })
+          }
+        />
+      </div>
     </div>
   );
 };

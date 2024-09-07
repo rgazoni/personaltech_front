@@ -38,7 +38,7 @@ export const passwordReducer = (state = initialState, action: TPasswordAction | 
       return {
         len: state.len,
         curr_password: state.curr_password,
-        equals: action.payload === state.curr_password
+        equals: action.payload === state.curr_password && state.curr_password.length > 0
       };
     default:
       return state;
