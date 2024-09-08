@@ -57,15 +57,20 @@ const DropdownUnique = ({
     setSelectedItem(newSelectedItem);
 
     if (onSelect && newSelectedItem) {
-      onSelect(newSelectedItem); // Call onSelectRating with the selected category
+      onSelect(newSelectedItem); // Call onSelect with the selected category
     }
   };
+
+  // Get the label of the selected item
+  const selectedLabel = selectedItem
+    ? data.find((item) => item.id === selectedItem)?.label
+    : title;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button className="flex items-center gap-1 rounded-full">
-          <span>{title}</span>
+          <span>{selectedLabel}</span> {/* Display selected item label */}
           <ChevronDownIcon size={16} />
         </Button>
       </DropdownMenuTrigger>
@@ -133,12 +138,13 @@ const DropdownSelectionCategories = ({
 };
 
 const ComboboxCity = ({
-  onSelectCity,
+  setSelectedCity,
+  selectedCity
 }: {
-  onSelectCity?: (cities: string[]) => void;
+  setSelectedCity?: (city: string) => void;
+  selectedCity?: string;
 }) => {
   const [open, setOpen] = useState(false);
-  const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [cities, setCities] = useState([]);
 
@@ -162,17 +168,13 @@ const ComboboxCity = ({
   });
 
   const handleSelectCity = (cityName: string) => {
-    const sel = selectedCities.includes(cityName)
-      ? selectedCities.filter((city) => city !== cityName)
-      : [...selectedCities, cityName];
-
-    setSelectedCities((prevSelected) =>
-      prevSelected.includes(cityName)
-        ? prevSelected.filter((city) => city !== cityName)
-        : [...prevSelected, cityName]
-    );
-    if (onSelectCity) onSelectCity(sel);
+    if (selectedCity === cityName) {
+      setSelectedCity?.(''); // Unselect the city if it's already selected
+    } else {
+      setSelectedCity?.(cityName);
+    }
   };
+
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -182,7 +184,7 @@ const ComboboxCity = ({
           aria-expanded={open}
           className="flex items-center gap-1 rounded-full"
         >
-          <span>Cidade</span>
+          <span>{selectedCity || 'Cidade'}</span>
           <ChevronDownIcon size={16} />
         </Button>
       </PopoverTrigger>
@@ -206,20 +208,17 @@ const ComboboxCity = ({
                     value={city.nome}
                     onSelect={() =>
                       handleSelectCity(
-                        city.nome +
-                        ' - ' +
-                        city.microrregiao.mesorregiao.UF.sigla
+                        city.nome + ' - ' + city.microrregiao.mesorregiao.UF.sigla
                       )
                     }
                   >
                     <Check
                       className={cn(
                         'mr-2 h-4 w-4',
-                        selectedCities.includes(
+                        selectedCity ===
                           city.nome +
-                          ' -' +
+                          ' - ' +
                           city.microrregiao.mesorregiao.UF.sigla
-                        )
                           ? 'opacity-100'
                           : 'opacity-0'
                       )}
@@ -236,18 +235,31 @@ const ComboboxCity = ({
   );
 };
 
+
 export const Search = () => {
   //TODO already here when select a city
-  const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [selectedCity, setSelectedCity] = useState<string>('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedRating, setSelectedRating] = useState<string | null>(null);
+  const [selectedRating, setSelectedRating] = useState<string>('');
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
 
   const [pages, setPages] = useState<GetPage[]>([]);
 
   const mutateSearch = useMutation({
-    mutationFn: ({ ex, name }: { ex?: string[], name?: string }) => fetchPersonalSearch(ex, name),
+    mutationFn: ({ ex, name, state, city, rate }: {
+      ex?: string[],
+      name?: string,
+      state?: string,
+      city?: string,
+      rate?: string
+    }) => fetchPersonalSearch(
+      ex,
+      name,
+      state,
+      city,
+      rate
+    ),
     mutationKey: ['trainers', selectedCategories, name],
     gcTime: 1000 * 60 * 60,
     onSuccess: (data) => {
@@ -257,17 +269,20 @@ export const Search = () => {
 
   React.useEffect(() => {
     console.log('Selected filters:');
-    console.log(selectedCities);
+    console.log(selectedCity);
     console.log(selectedCategories);
     console.log(selectedRating);
     console.log(selectedGender);
-  }, [selectedCities, selectedCategories, selectedRating, selectedGender]);
+  }, [selectedCity, selectedCategories, selectedRating, selectedGender]);
 
   React.useEffect(() => {
     mutateSearch.mutate({
       ex: selectedCategories,
+      city: selectedCity.split(' - ')[0],
+      state: selectedCity.split(' - ')[1],
+      rate: selectedRating,
     });
-  }, [selectedCategories]);
+  }, [selectedCategories, selectedCity, selectedRating]);
 
   return (
     <div className="relative h-full w-full">
@@ -286,7 +301,7 @@ export const Search = () => {
               <div className="relative rounded-full border border-primary bg-tertiary-foreground">
                 <input
                   type="text"
-                  placeholder="Qual é o nome ou modalidade do treinador?"
+                  placeholder="Qual é o nome do treinador ou acessoria?"
                   className="h-12 w-full rounded-full bg-tertiary-foreground pl-4 focus:outline-none"
                   onChange={(e) => setName(e.target.value)}
                   onBlur={(e) => {
@@ -294,6 +309,8 @@ export const Search = () => {
                       mutateSearch.mutate({
                         name: '',
                         ex: selectedCategories,
+                        city: selectedCity.split(' - ')[0],
+                        state: selectedCity.split(' - ')[1],
                       });
                     }
                   }}
@@ -303,6 +320,8 @@ export const Search = () => {
                     mutateSearch.mutate({
                       name: name || '',
                       ex: selectedCategories,
+                      city: selectedCity.split(' - ')[0],
+                      state: selectedCity.split(' - ')[1],
                     });
                   }}
                 >
@@ -317,7 +336,10 @@ export const Search = () => {
                 setSelectedItems={setSelectedCategories}
                 selectedItems={selectedCategories}
               />
-              <ComboboxCity onSelectCity={setSelectedCities} />
+              <ComboboxCity
+                selectedCity={selectedCity}
+                setSelectedCity={setSelectedCity}
+              />
               <DropdownUnique
                 title="Avaliação"
                 data={[

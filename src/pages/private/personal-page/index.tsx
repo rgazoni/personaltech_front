@@ -163,7 +163,7 @@ export const PersonalPage = () => {
                       <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
                       >
                         <div className="bg-white p-4 rounded-lg shadow-lg">
-                          <X className="absolute top-5 right-5 m-2 text-white" onClick={handleCloseModal} />
+                          <X className="absolute top-5 right-5 m-2 text-white cursor-pointer" onClick={handleCloseModal} />
                           <iframe
                             width="560"
                             height="315"

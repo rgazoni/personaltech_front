@@ -21,7 +21,6 @@ import {
   deleteInvite,
   getPersonalReqs,
   getRatings,
-  updateRating,
   updateRequest,
 } from '@/api/ratings';
 

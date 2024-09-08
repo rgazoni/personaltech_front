@@ -29,7 +29,7 @@ import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getTraineeReqs } from '@/api/ratings';
 import md5 from 'md5';
-import { logoutChat } from '@/pages/private/message';
+import { getUnreadMessageCount, logoutChat } from '@/pages/private/message';
 
 const nav_bar = (color: string) => {
   const navigate = useNavigate();
@@ -65,6 +65,7 @@ const logged_nav_bar_client = (client: Client, color: string) => {
   const updateClient = useAppStore((state) => state.updateClient);
   const [showDropdown, setShowDropdown] = React.useState(false);
   const [md5F, setMd5F] = React.useState('');
+  const [counterMessage, setCounterMessage] = React.useState(0);
 
   const handleSignOut = async () => {
     navigate('/search');
@@ -97,18 +98,46 @@ const logged_nav_bar_client = (client: Client, color: string) => {
     }
   }, [isSuccess, data]);
 
+  useEffect(() => {
+    const fetchUnreadMessages = async () => {
+      try {
+        const msg = await getUnreadMessageCount();
+        setCounterMessage(msg);
+      } catch (error) {
+        console.log("Error fetching unread messages:", error);
+      }
+    };
+
+    // Fetch unread messages on component mount
+    fetchUnreadMessages();
+
+    // Optionally set up an interval to refresh cache periodically
+    const intervalId = setInterval(fetchUnreadMessages, 60000); // Update every minute
+
+    return () => clearInterval(intervalId); // Clean up on unmount
+  }, []);
+
+
   return (
     <div
       className={`hidden gap-7 pl-6 md:flex md:items-center md:justify-center lg:flex ${color}`}
     >
       <div className="flex items-center justify-center gap-6">
-        <div>
+        <div className='relative'>
           <MessageCircle
             size={20}
-            className={`cursor-pointer text-secondary ${color}`}
+            className={`cursor-pointer ${color}`}
+            strokeWidth={2}
             onClick={handleMessages}
           />
+          {counterMessage > 0 && (
+            <div className="absolute -right-2 -top-2 flex h-3 w-3 items-center justify-center rounded-full bg-primary">
+              <span className="text-[8px] font-bold">{counterMessage}</span>
+            </div>
+          )}
+
         </div>
+
         <div className="relative">
           <div
             className="relative cursor-pointer"
@@ -188,6 +217,7 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
   const navigate = useNavigate();
   const updateUser = useAppStore((state) => state.updateUser);
   const updatePage = useAppStore((state) => state.updatePage);
+  const [counterMessage, setCounterMessage] = React.useState(0);
 
   const handleSignOut = async () => {
     navigate('/search');
@@ -201,17 +231,43 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
     navigate('/message');
   };
 
+  useEffect(() => {
+    const fetchUnreadMessages = async () => {
+      try {
+        const msg = await getUnreadMessageCount();
+        setCounterMessage(msg);
+      } catch (error) {
+        console.log("Error fetching unread messages:", error);
+      }
+    };
+
+    // Fetch unread messages on component mount
+    fetchUnreadMessages();
+
+    // Optionally set up an interval to refresh cache periodically
+    const intervalId = setInterval(fetchUnreadMessages, 60000); // Update every minute
+
+    return () => clearInterval(intervalId); // Clean up on unmount
+  }, []);
+
+
   return (
     <div
       className={`hidden gap-4 pl-6 md:flex md:items-center md:justify-center lg:flex ${color}`}
     >
-      <div>
+      <div className='relative'>
         <MessageCircle
           size={20}
           className={`cursor-pointer ${color}`}
           strokeWidth={2}
           onClick={handleMessages}
         />
+        {counterMessage > 0 && (
+          <div className="absolute -right-2 -top-2 flex h-3 w-3 items-center justify-center rounded-full bg-primary">
+            <span className="text-[8px] font-bold">{counterMessage}</span>
+          </div>
+        )}
+
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger>

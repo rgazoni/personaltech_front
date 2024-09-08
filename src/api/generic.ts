@@ -7,3 +7,18 @@ export const fetchCities = async (searchTerm: string) => {
     city.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
 }
+// Fetch states from IBGE API
+export const getStates = async () => {
+  const response = await api.get(
+    'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
+  );
+  return response.data;
+};
+
+// Fetch cities by state from IBGE API
+export const getCitiesByState = async (stateId: number) => {
+  const response = await api.get(
+    `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${stateId}/municipios`
+  );
+  return response.data;
+};

@@ -7,6 +7,7 @@ import { updatePage } from '@/api/page';
 import useAppStore, { User } from '@/store';
 import { useToast } from '@/hooks/use-toast.hook';
 import { useNavigate } from 'react-router-dom';
+import { loginChat } from '@/pages/private/message';
 
 export const PersonalData = ({ user }: { user: User }) => {
   const { state } = useEditPersonalContext();
@@ -39,6 +40,7 @@ export const PersonalData = ({ user }: { user: User }) => {
     mutationFn: updatePage,
     onSuccess: (data) => {
       // Handle success (e.g., show a success message)
+      loginChat(user.uid_chat);
       updatePageFields(data);
       updateUserField('city', state.city);
       updateUserField('state', state.state);
@@ -93,10 +95,9 @@ export const PersonalData = ({ user }: { user: User }) => {
             user.is_cref_verified !== 'valid'
           }
         >
-          {page.is_published ? "Atualizar página" : "Publicar página"}
+          {page.is_published ? 'Atualizar página' : 'Publicar página'}
         </Button>
       </div>
     </form>
   );
 };
-

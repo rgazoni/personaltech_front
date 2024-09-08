@@ -2,17 +2,18 @@ import { LabeledInput } from '@/components/common/labeled-input';
 import { Button } from '@/components/ui/button';
 import { isValidEmail } from '@/lib/helpers';
 import { initialState, passwordReducer } from '@/reducers/signup-validation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './styles.css';
 import { Camera, ChevronLeft } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { createTrainee } from '@/api/user';
 import { useToast } from '@/hooks/use-toast.hook';
 import useAppStore from '@/store';
 import imageCompression from 'browser-image-compression';
 import { loginChat } from '@/pages/private/message';
+import { getCitiesByState, getStates } from '@/api/generic';
 
 // @types
 type ModalProps = {
@@ -38,31 +39,19 @@ export const UserEditImage = ({
   borderRadius = '0.75',
   onEdit,
 }: UserImageProps) => {
-  if (src === '' || src === null) {
-    src = DEFAULT_IMAGE_URL;
-  } else {
-    // Check if the src is a base64 image
-    if (!src.startsWith('data:image/jpeg;base64')) {
-      const base64Image = 'data:image/jpeg;base64,' + src;
-      src = base64Image;
-    }
-  }
-
-  const [_, setAvatar] = useState<File | null>(null);
+  const [avatar, setAvatar] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | ArrayBuffer | null>(null);
 
-  const handleImageChange = async (e: any) => {
-    const file = e.target.files[0];
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       try {
-        // Set the compression options
         const options = {
-          maxSizeMB: 1, // Set the max size to 1 MB
-          maxWidthOrHeight: 600, // Limit the image size
+          maxSizeMB: 1,
+          maxWidthOrHeight: 600,
           useWebWorker: true,
         };
 
-        // Compress the image
         const compressedFile = await imageCompression(file, options);
 
         setAvatar(compressedFile);
@@ -101,7 +90,7 @@ export const UserEditImage = ({
           />
         ) : (
           <img
-            src={src}
+            src={src || DEFAULT_IMAGE_URL}
             alt="User profile image"
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
@@ -149,20 +138,34 @@ export const Modal = ({ children, className }: ModalProps) => {
 
 export const SignupTrainee = () => {
   const updateClient = useAppStore((state) => state.updateClient);
-
   const navigate = useNavigate();
   const { notify } = useToast();
-  const [email, setEmail] = React.useState({
-    email: '',
-    isValid: true,
-  });
-  const [submit, setSubmit] = React.useState(false);
-  // @reducers/password-validation-signup
+
+  const [email, setEmail] = useState({ email: '', isValid: true });
+  const [submit, setSubmit] = useState(false);
   const [{ len, equals }, dispatch] = useReducer(passwordReducer, initialState);
-
   const [avatar, setAvatar] = useState<File | null>(null);
+  const [loader, setLoader] = useState(false);
 
-  const [loader, setLoader] = React.useState(false);
+  // State and city related
+  const [selectedState, setSelectedState] = useState('');
+  const [cities, setCities] = useState<any[]>([]);
+  const [selectedCity, setSelectedCity] = useState('');
+
+  // Fetch all states using useQuery
+  const { data: states, isLoading: loadingStates } = useQuery({
+    queryKey: ['states'],
+    queryFn: getStates,
+  });
+
+  useEffect(() => {
+    if (selectedState) {
+      getCitiesByState(Number(selectedState)).then((cities) => {
+        setCities(cities);
+        setSelectedCity(''); // Reset city selection when state changes
+      });
+    }
+  }, [selectedState]);
 
   const mutate = useMutation({
     mutationFn: createTrainee,
@@ -206,14 +209,13 @@ export const SignupTrainee = () => {
             email: formData.get('email') as string,
             password: formData.get('password') as string,
             avatar: avatar!,
-            city: formData.get('city') as string,
-            state: formData.get('state') as string,
+            city: selectedCity,
+            state: selectedState,
           };
           setSubmit(true);
           if (!email.isValid) {
             return;
           }
-          //TODO submit
           mutate.mutate(obj);
         }}
       >
@@ -261,16 +263,52 @@ export const SignupTrainee = () => {
         </div>
 
         <div className="grid grid-cols-2 gap-5">
-          <LabeledInput
-            id="state"
-            name="state"
-            label="Estado"
-          />
-          <LabeledInput
-            id="city"
-            name="city"
-            label="Cidade"
-          />
+          <div>
+            <label htmlFor="state" className="block text-sm font-medium">
+              Estado
+            </label>
+            <select
+              id="state"
+              name="state"
+              className="mt-1 block w-full"
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+              disabled={loadingStates}
+            >
+              <option value="" disabled>
+                {loadingStates ? 'Carregando estados...' : 'Selecione um estado'}
+              </option>
+              {states &&
+                states.map((state: any) => (
+                  <option key={state.id} value={state.id}>
+                    {state.sigla}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="city" className="block text-sm font-medium">
+              Cidade
+            </label>
+            <select
+              id="city"
+              name="city"
+              className="mt-1 block w-full"
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              disabled={!selectedState || cities.length === 0}
+            >
+              <option value="" disabled>
+                {selectedState ? 'Selecione uma cidade' : 'Selecione um estado primeiro'}
+              </option>
+              {cities.map((city) => (
+                <option key={city.id} value={city.id}>
+                  {city.nome}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-5">
@@ -308,12 +346,13 @@ export const SignupTrainee = () => {
           <Button
             className="mx-auto mt-4 w-full rounded-full py-6"
             type="submit"
-            disabled={!len || !equals}
+            disabled={!len || !equals || !selectedCity || !selectedState}
           >
             {loader ? 'Carregando...' : 'Cadastrar'}
           </Button>
         </div>
       </form>
-    </Modal>
+    </Modal >
   );
 };
+

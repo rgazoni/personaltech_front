@@ -1,5 +1,5 @@
 import { Header } from "@/components/common/header";
-import { TextMessage, User, CometChat } from "@cometchat/chat-sdk-javascript";
+import { User, CometChat } from "@cometchat/chat-sdk-javascript";
 import { CometChatUIKit, UIKitSettingsBuilder } from "@cometchat/chat-uikit-react";
 import { CometChatConversationsWithMessages } from "@cometchat/chat-uikit-react"; //import the component in your App.js file
 import React from "react";
@@ -38,6 +38,15 @@ export const loginChat = async (UID: string) => {
   }
 };
 
+export const getUnreadMessageCount = async () => {
+  const unreadMessageCount = await CometChat.getUnreadMessageCountForAllUsers();
+  const totalCount = Object.values(unreadMessageCount).reduce((acc, count) => acc + count, 0);
+
+  console.log("Fetched unread message count for all users:", totalCount);
+
+  return totalCount;
+}
+
 export const logoutChat = async () => {
   const logout = await CometChatUIKit.logout();
   console.log("Logout successful:", logout);
@@ -55,7 +64,6 @@ export const App1 = () => {
       })
     }
   }, [])
-
 
   return (
     <div className="h-screen px-16">
