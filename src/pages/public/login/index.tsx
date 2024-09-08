@@ -75,11 +75,11 @@ export const Login = () => {
               <Button className="mt-10 py-6 mx-auto w-4/6 rounded-full" type="submit" onClick={() => setLoader(true)}>
                 {loader ? 'Carregando...' : 'Log in'}
               </Button>
+              <Button className="mt-1 py-2 mx-auto" variant="link">
+                <span className="text-blue-400 underline font-light">Esqueci minha senha</span>
+              </Button>
             </div>
           </form>
-          <Button className="mt-1 py-2 mx-auto" variant="link">
-            <span className="text-blue-400 underline font-light">Esqueci minha senha</span>
-          </Button>
         </TabsContent>
         <TabsContent value="trainee">
           <form
@@ -100,11 +100,11 @@ export const Login = () => {
               <Button className="mt-10 py-6 mx-auto w-4/6 rounded-full" type="submit" onClick={() => setLoader(true)}>
                 {loader ? 'Carregando...' : 'Log in'}
               </Button>
+              <Button className="mt-1 py-2 mx-auto" variant="link">
+                <span className="text-blue-400 underline font-light">Esqueci minha senha</span>
+              </Button>
             </div>
           </form>
-          <Button className="mt-1 py-2 mx-auto" variant="link">
-            <span className="text-blue-400 underline font-light">Esqueci minha senha</span>
-          </Button>
         </TabsContent>
       </Tabs>
     </Modal>
