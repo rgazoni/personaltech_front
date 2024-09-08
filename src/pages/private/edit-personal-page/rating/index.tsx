@@ -353,7 +353,9 @@ export const PersonalRatingPage = () => {
             <AccordionItem value="item-1">
               <AccordionTrigger>
                 <h3 className="text-xl font-bold text-secondary">
-                  Avaliações Pendentes
+                  {isLoadingPending || pendData?.length === 0
+                    ? 'Avaliações Pendentes'
+                    : `Avaliações Pendentes (${pendData?.length})`}
                 </h3>
               </AccordionTrigger>
               <AccordionContent>
@@ -382,7 +384,9 @@ export const PersonalRatingPage = () => {
             <AccordionItem value="item-2">
               <AccordionTrigger>
                 <h3 className="text-xl font-bold text-secondary">
-                  Avaliações Aceitas
+                  {isLoadingAccepted || accData?.length === 0
+                    ? 'Avaliações Aceitas'
+                    : `Avaliações Aceitas (${accData?.length})`}
                 </h3>
               </AccordionTrigger>
               <AccordionContent>

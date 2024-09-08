@@ -10,6 +10,7 @@ export type CreateUser = {
   type: string;
   state: string;
   city: string;
+  gender: string;
 };
 
 export type LoginResponse = {

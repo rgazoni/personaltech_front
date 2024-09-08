@@ -27,7 +27,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getTraineeReqs } from '@/api/ratings';
+import { getPendingsReqs, getTraineeReqs } from '@/api/ratings';
 import md5 from 'md5';
 import { getUnreadMessageCount, logoutChat } from '@/pages/private/message';
 
@@ -167,12 +167,12 @@ const logged_nav_bar_client = (client: Client, color: string) => {
               >
                 <div className="flex flex-col gap-2 p-3">
                   {data?.length! > 0 && (
-                    <p className="text-sm">
-                      Você tem {data?.length} novas solicitações de avaliação
+                    <p className="text-sm text-secondary">
+                      Você tem {data?.length} novas solicitações de avaliação pendentes
                     </p>
                   )}
                   {!data && (
-                    <p className="text-xs text-muted">Você não tem novas solicitações</p>
+                    <p className="text-xs text-secondary">Você não tem novas solicitações</p>
                   )}
                 </div>
               </div>
@@ -209,7 +209,7 @@ const logged_nav_bar_client = (client: Client, color: string) => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
+    </div >
   );
 };
 
@@ -218,6 +218,8 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
   const updateUser = useAppStore((state) => state.updateUser);
   const updatePage = useAppStore((state) => state.updatePage);
   const [counterMessage, setCounterMessage] = React.useState(0);
+  const [showDropdown, setShowDropdown] = React.useState(false);
+  const [md5F, setMd5F] = React.useState('');
 
   const handleSignOut = async () => {
     navigate('/search');
@@ -251,24 +253,90 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
   }, []);
 
 
+  const { data, isSuccess } = useQuery({
+    queryKey: [],
+    queryFn: () => getPendingsReqs(user.id),
+    refetchOnWindowFocus: true,
+  });
+
+  useEffect(() => {
+    console.log('data ', data);
+    if (isSuccess && data?.length > 0) {
+      const newMd5 = md5(JSON.stringify(data));
+      setMd5F(newMd5);
+      if (newMd5 !== user.md5Not) {
+        updateUser({
+          ...user,
+          sawNot: false,
+          md5Not: md5F,
+        });
+      }
+    }
+  }, [isSuccess, data]);
+
+
   return (
     <div
       className={`hidden gap-4 pl-6 md:flex md:items-center md:justify-center lg:flex ${color}`}
     >
-      <div className='relative'>
-        <MessageCircle
-          size={20}
-          className={`cursor-pointer ${color}`}
-          strokeWidth={2}
-          onClick={handleMessages}
-        />
-        {counterMessage > 0 && (
-          <div className="absolute -right-2 -top-2 flex h-3 w-3 items-center justify-center rounded-full bg-primary">
-            <span className="text-[8px] font-bold">{counterMessage}</span>
+      {page.is_published && (
+        <div className='relative'>
+          <MessageCircle
+            size={20}
+            className={`cursor-pointer ${color}`}
+            strokeWidth={2}
+            onClick={handleMessages}
+          />
+
+          {counterMessage > 0 && (
+            <div className="absolute -right-2 -top-2 flex h-3 w-3 items-center justify-center rounded-full bg-primary">
+              <span className="text-[8px] font-bold">{counterMessage}</span>
+            </div>
+          )}
+        </div>
+      )}
+      <div className="relative">
+        <div
+          className="relative cursor-pointer"
+          onClick={() => {
+            setShowDropdown(!showDropdown);
+            if (!user.sawNot) {
+              updateUser({
+                ...user,
+                sawNot: true,
+                md5Not: md5F,
+              });
+            }
+          }}
+        >
+          {isSuccess && data?.length > 0 && !user.sawNot && (
+            <div className="absolute -right-2 -top-2 flex h-3 w-3 items-center justify-center rounded-full bg-primary">
+              <span className="text-[8px] font-bold">{data.length}</span>
+            </div>
+          )}
+          <Bell size={20} className="cursor-pointer" />
+        </div>
+        {showDropdown && (
+          <div className="absolute -right-4 top-6 z-10 mt-1 w-60 rounded-lg border bg-white shadow-lg">
+            <div
+              className="cursor-pointer rounded-md bg-background shadow-md hover:bg-gray-100"
+              onClick={() => navigate('/page/edit/rating')}
+            >
+              <div className="flex flex-col gap-2 p-3">
+                {data?.length! > 0 && (
+                  <p className="text-sm text-secondary">
+                    Você tem {data?.length} novas solicitações de avaliação
+                  </p>
+                )}
+                {!data && (
+                  <p className="text-xs text-secondary">Você não tem novas solicitações</p>
+                )}
+              </div>
+            </div>
           </div>
         )}
-
       </div>
+
       <DropdownMenu>
         <DropdownMenuTrigger>
           <div className="flex cursor-pointer items-center justify-center gap-3 rounded-lg px-3 py-1 hover:bg-black/20">

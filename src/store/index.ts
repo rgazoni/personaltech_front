@@ -15,6 +15,8 @@ export const initialUser = {
   uid_chat: '',
   state: '',
   city: '',
+  sawNot: false,
+  md5Not: '',
 };
 
 export interface User {
@@ -30,18 +32,23 @@ export interface User {
   uid_chat: string;
   state: string;
   city: string;
+  sawNot: boolean;
+  md5Not: string;
 }
 
 interface UserSlice {
   user: User;
   updateUser: (user: User) => void;
   updateUserField: (field: string, value: string) => void;
+  setSawNotifications: (saw: boolean, md5: string) => void;
 }
 
 const createUserSlice: StateCreator<UserSlice, [], [], UserSlice> = (set) => ({
   user: initialUser,
   updateUser: (user) => set({ user }),
   updateUserField: (field, value) => set((state) => ({ user: { ...state.user, [field]: value } })),
+  setSawNotifications: (saw: boolean, md5: string) =>
+    set((state) => ({ user: { ...state.user, sawNot: saw, md5Not: md5 } })),
 });
 // << END USER SLICE
 

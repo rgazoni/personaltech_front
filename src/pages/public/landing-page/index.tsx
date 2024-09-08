@@ -25,7 +25,7 @@ export const LandingPage = () => {
           <h3 className="text-base lg:w-72 text-muted leading-relaxed">
             Conheça milhares de profissionais especializados em só um lugar.
           </h3>
-          <Cta className="mt-2">
+          <Cta className="mt-2" path="/search">
             Encontrar um personal
           </Cta>
         </div>
@@ -85,7 +85,7 @@ export const LandingPage = () => {
           Mais de 5000 pessoas já encontraram ser personal através do Personal
           <span className="font-light italic">tech</span>.
         </p>
-        <Cta className="mt-6 mx-auto">
+        <Cta className="mt-6 mx-auto" path="/search">
           Encontrar um personal
         </Cta>
       </div>
@@ -106,7 +106,9 @@ export const LandingPage = () => {
               </li>
             ))}
           </ul>
-          <Cta className="bg-secondary hover:bg-secondary">Quero dar aulas</Cta>
+          <Cta className="bg-secondary hover:bg-secondary"
+            path="/create"
+          >Quero dar aulas</Cta>
         </div>
 
         <div className="container rounded-md mx-auto relative w-3/6 overflow-hidden hidden md:hidden lg:block">
@@ -130,7 +132,9 @@ export const LandingPage = () => {
           ))}
         </div>
 
-        <Cta className="">Quero dar aulas</Cta>
+        <Cta
+          path="/create"
+        >Quero dar aulas</Cta>
       </div>
     </Layout>
   );

@@ -17,5 +17,6 @@ export const initialState = {
     name: '',
     state: '',
     city: '',
+    gender: '',
   },
 };

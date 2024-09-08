@@ -196,38 +196,41 @@ const ComboboxCity = ({
             onValueChange={(value: string) => setSearchTerm(value)}
           />
           <CommandList>
-            {mutate.isPending ? (
-              <CommandEmpty>Loading cities...</CommandEmpty>
-            ) : cities.length === 0 ? (
-              <CommandEmpty>Cidade não encontrada</CommandEmpty>
-            ) : (
-              <CommandGroup>
-                {cities.map((city: any) => (
-                  <CommandItem
-                    key={city.id}
-                    value={city.nome}
-                    onSelect={() =>
-                      handleSelectCity(
-                        city.nome + ' - ' + city.microrregiao.mesorregiao.UF.sigla
-                      )
-                    }
-                  >
-                    <Check
-                      className={cn(
-                        'mr-2 h-4 w-4',
-                        selectedCity ===
-                          city.nome +
-                          ' - ' +
-                          city.microrregiao.mesorregiao.UF.sigla
-                          ? 'opacity-100'
-                          : 'opacity-0'
-                      )}
-                    />
-                    {city.nome} - {city.microrregiao.mesorregiao.UF.sigla}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
+            {searchTerm === '' ? (
+              <CommandEmpty className='text-muted text-center text-sm py-10'>Digite ao mínimo 3 letras para procurar</CommandEmpty>
+            ) :
+              mutate.isPending ? (
+                <CommandEmpty>Loading cities...</CommandEmpty>
+              ) : cities.length === 0 ? (
+                <CommandEmpty className='text-muted text-center text-sm py-10'>Cidade não encontrada</CommandEmpty>
+              ) : (
+                <CommandGroup>
+                  {cities.map((city: any) => (
+                    <CommandItem
+                      key={city.id}
+                      value={city.nome}
+                      onSelect={() =>
+                        handleSelectCity(
+                          city.nome + ' - ' + city.microrregiao.mesorregiao.UF.sigla
+                        )
+                      }
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          selectedCity ===
+                            city.nome +
+                            ' - ' +
+                            city.microrregiao.mesorregiao.UF.sigla
+                            ? 'opacity-100'
+                            : 'opacity-0'
+                        )}
+                      />
+                      {city.nome} - {city.microrregiao.mesorregiao.UF.sigla}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
           </CommandList>
         </Command>
       </PopoverContent>

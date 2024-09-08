@@ -63,6 +63,7 @@ export const LegalLisense = () => {
           birthdate: state.user.birthdate,
           state: state.user.state,
           city: state.user.city,
+          gender: state.user.gender
         });
       }}
     >

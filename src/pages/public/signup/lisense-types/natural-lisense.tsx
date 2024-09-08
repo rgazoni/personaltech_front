@@ -63,6 +63,7 @@ export const NaturalLisense = () => {
           password: state.user.password,
           state: state.user.state,
           city: state.user.city,
+          gender: state.user.gender
         });
       }}
     >

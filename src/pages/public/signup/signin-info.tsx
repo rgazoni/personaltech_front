@@ -1,9 +1,14 @@
+import { getCitiesByState, getStates } from '@/api/generic';
 import { LabeledInput } from '@/components/common/labeled-input';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { isValidEmail } from '@/lib/helpers';
 import { useProgressContext } from '@/providers/signup-provider';
 import { initialState, passwordReducer } from '@/reducers/signup-validation';
-import { useReducer, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useReducer, useState } from 'react';
 
 export const SigninInfo = () => {
   const [email, setEmail] = useState<boolean>(true);
@@ -11,6 +16,29 @@ export const SigninInfo = () => {
   const [{ len, equals }, dispatch] = useReducer(passwordReducer, initialState);
   // @context
   const { dispatch: progressDispatch, state } = useProgressContext();
+
+  // State and city related
+  const [selectedState, setSelectedState] = useState('');
+  const [cities, setCities] = useState<any[]>([]);
+  const [selectedCity, setSelectedCity] = useState('');
+  const [gender, setGender] = useState('');
+
+  // Fetch all states using useQuery
+  const { data: states, isLoading: loadingStates } = useQuery({
+    queryKey: ['states'],
+    queryFn: getStates,
+  });
+
+  useEffect(() => {
+    if (selectedState) {
+      const st = states.find((state: any) => state.sigla === selectedState);
+      getCitiesByState(
+        Number(st.id)).then((cities) => {
+          setCities(cities);
+          setSelectedCity(''); // Reset city selection when state changes
+        });
+    }
+  }, [selectedState]);
 
   return (
     <div>
@@ -24,8 +52,9 @@ export const SigninInfo = () => {
             email: formData.get('email') as string,
             birthdate: formData.get('birthdate') as string,
             password: formData.get('password') as string,
-            state: formData.get('state') as string,
-            city: formData.get('city') as string,
+            state: selectedState,
+            city: selectedCity,
+            gender,
           };
           if (!isValidEmail(obj.email)) {
             setEmail(false);
@@ -56,18 +85,78 @@ export const SigninInfo = () => {
           type="date"
           name="birthdate"
         />
+        <Label className="font-light">Sexo</Label>
+        <RadioGroup className='flex gap-10' onValueChange={(value) => setGender(value)}>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="M" id="M" />
+            <Label htmlFor="M" className='font-light'>Masculino</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="F" id="F" />
+            <Label htmlFor="F" className='font-light'>Feminino</Label>
+          </div>
+        </RadioGroup>
+        <div className="grid grid-cols-2 gap-5">
+          <div>
+            <Label htmlFor="state" className="font-light">
+              Estado
+            </Label>
+            <Select
+              value={selectedState}
+              onValueChange={(value) => {
+                setSelectedState(value); // Make sure the selected state is correctly updated
+              }}
+              disabled={loadingStates} // Correctly disable if states are still loading
+            >
+              <SelectTrigger className="mt-1 w-full text-start">
+                <div className="text-sm">
+                  <SelectValue
+                    placeholder={
+                      loadingStates ? 'Carregando estados...' : 'Selecione um estado'
+                    }
+                  />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {states &&
+                  states.map((state: any) => (
+                    <SelectItem key={state.sigla} value={state.sigla}>
+                      {state.sigla}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className='grid-cols-2 grid gap-3'>
-          <LabeledInput
-            id="state"
-            name="state"
-            label="Estado"
-          />
-          <LabeledInput
-            id="city"
-            name="city"
-            label="Cidade"
-          />
+          <div>
+            <Label htmlFor="city" className="font-light">
+              Cidade
+            </Label>
+            <Select
+              value={selectedCity}
+              onValueChange={(value) => setSelectedCity(value)}
+              disabled={!selectedState || cities.length === 0}
+            >
+              <SelectTrigger className="mt-1 w-full py-2 border rounded-md px-4 text-start flex justify-between items-center">
+                <div className="text-sm">
+                  <SelectValue
+                    placeholder={
+                      selectedState
+                        ? 'Selecione uma cidade'
+                        : 'Selecione um estado primeiro'
+                    }
+                  />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {cities.map((city) => (
+                  <SelectItem key={city.id} value={city.nome}>
+                    {city.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className='grid-cols-2 grid gap-3'>
