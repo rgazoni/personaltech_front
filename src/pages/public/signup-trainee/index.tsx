@@ -172,11 +172,6 @@ export const SignupTrainee = () => {
     }
   }, [selectedState]);
 
-  useEffect(() => {
-    console.log(selectedCity);
-    console.log(selectedState);
-  }, [selectedCity, selectedState]);
-
   const mutate = useMutation({
     mutationFn: createTrainee,
     mutationKey: ['createClient'],

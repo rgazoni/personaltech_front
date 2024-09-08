@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@cometchat/calls-sdk-javascript": "^4.0.10",
     "@cometchat/chat-uikit-react": "^4.3.19",
     "@cometchat/uikit-elements": "^4.3.15",
     "@cometchat/uikit-resources": "^4.3.11",

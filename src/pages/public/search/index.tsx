@@ -245,23 +245,25 @@ export const Search = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedRating, setSelectedRating] = useState<string>('');
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
+  const [name, setName] = useState<string>('');
 
   const [pages, setPages] = useState<GetPage[]>([]);
 
   const mutateSearch = useMutation({
-    mutationFn: ({ ex, name, state, city, rate }: {
+    mutationFn: ({ ex, name, state, city, rate, gender }: {
       ex?: string[],
       name?: string,
       state?: string,
       city?: string,
-      rate?: string
+      rate?: string,
+      gender?: string
     }) => fetchPersonalSearch(
       ex,
       name,
       state,
       city,
-      rate
+      rate,
+      gender
     ),
     mutationKey: ['trainers', selectedCategories, name],
     gcTime: 1000 * 60 * 60,
@@ -284,8 +286,9 @@ export const Search = () => {
       city: selectedCity.split(' - ')[0],
       state: selectedCity.split(' - ')[1],
       rate: selectedRating,
+      gender: selectedGender,
     });
-  }, [selectedCategories, selectedCity, selectedRating]);
+  }, [selectedCategories, selectedCity, selectedRating, selectedGender]);
 
   return (
     <div className="relative h-full w-full">
@@ -355,8 +358,8 @@ export const Search = () => {
               <DropdownUnique
                 title="Gênero"
                 data={[
-                  { id: 'male', label: 'Masculino' },
-                  { id: 'female', label: 'Feminino' },
+                  { id: 'M', label: 'Masculino' },
+                  { id: 'F', label: 'Feminino' },
                 ]}
                 onSelect={setSelectedGender}
               />

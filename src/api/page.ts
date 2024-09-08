@@ -73,7 +73,8 @@ export const fetchPersonalSearch = async (
   name?: string,
   state?: string,
   city?: string,
-  rate?: string
+  rate?: string,
+  gender?: string
 ): Promise<GetPage[]> => {
   const query = new URLSearchParams();
   if (expertises && expertises.length > 0) {
@@ -86,9 +87,11 @@ export const fetchPersonalSearch = async (
     query.append('state', state);
     query.append('city', city);
   }
-
   if (rate && rate.length > 0) {
     query.append('rate', rate);
+  }
+  if (gender && gender.length > 0) {
+    query.append('gender', gender.includes('M') ? 'M' : 'F')
   }
 
   console.log(query.toString());

@@ -1,6 +1,6 @@
 import { Header } from "@/components/common/header";
 import { User, CometChat } from "@cometchat/chat-sdk-javascript";
-import { CometChatUIKit, UIKitSettingsBuilder } from "@cometchat/chat-uikit-react";
+import { CometChatCallButtons, CometChatIncomingCall, CometChatUIKit, UIKitSettingsBuilder } from "@cometchat/chat-uikit-react";
 import { CometChatConversationsWithMessages } from "@cometchat/chat-uikit-react"; //import the component in your App.js file
 import React from "react";
 

@@ -81,7 +81,6 @@ export const getPendingsReqs = async (token: string): Promise<Rating[]> => {
   return res.data;
 }
 
-
 export const updateRating = async (r: Partial<Rating>): Promise<Rating> => {
   const res = await api.put('ratings/update', r);
   return res.data;
