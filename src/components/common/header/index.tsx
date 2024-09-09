@@ -12,6 +12,7 @@ import {
   Bell,
   ChevronDown,
   Eye,
+  Frown,
   LogOut,
   MessageCircle,
   Settings,
@@ -172,7 +173,10 @@ const logged_nav_bar_client = (client: Client, color: string) => {
                     </p>
                   )}
                   {!data && (
-                    <p className="text-xs text-secondary">Você não tem novas solicitações</p>
+                    <div className='flex gap-1' >
+                      <Frown size={16} className='text-muted' />
+                      <p className="text-xs text-muted">Você não tem novas notificações.</p>
+                    </div>
                   )}
                 </div>
               </div>
@@ -277,7 +281,7 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
 
   return (
     <div
-      className={`hidden gap-4 pl-6 md:flex md:items-center md:justify-center lg:flex ${color}`}
+      className={`hidden gap-6 pl-6 md:flex md:items-center md:justify-center lg:flex ${color}`}
     >
       {page.is_published && (
         <div className='relative'>
@@ -325,11 +329,14 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
               <div className="flex flex-col gap-2 p-3">
                 {data?.length! > 0 && (
                   <p className="text-sm text-secondary">
-                    Você tem {data?.length} novas solicitações de avaliação
+                    Você tem {data?.length} novas solicitações de avaliação.
                   </p>
                 )}
-                {!data && (
-                  <p className="text-xs text-secondary">Você não tem novas solicitações</p>
+                {!data || data.length === 0 && (
+                  <div className='flex gap-1' >
+                    <Frown size={16} className='text-muted' />
+                    <p className="text-xs text-muted">Você não tem novas notificações.</p>
+                  </div>
                 )}
               </div>
             </div>
@@ -388,11 +395,17 @@ export const Header = ({ bgColorPP }: { bgColorPP?: string }) => {
           Personal<span className="font-light italic">tech</span>
         </h1>
       </div>
-      {user.id
-        ? logged_nav_bar_personal(page, user, bgColorPP)
-        : client.id
-          ? logged_nav_bar_client(client, bgColorPP)
-          : nav_bar(bgColorPP)}
+      <div className='flex items-center'>
+        <p
+          className={`cursor-pointer text-sm font-light ${bgColorPP}`}
+          onClick={() => navigate('/')}
+        >Sobre</p>
+        {user.id
+          ? logged_nav_bar_personal(page, user, bgColorPP)
+          : client.id
+            ? logged_nav_bar_client(client, bgColorPP)
+            : nav_bar(bgColorPP)}
+      </div>
     </header>
   );
 };

@@ -42,13 +42,17 @@ const DropdownUnique = ({
   title,
   data,
   onSelect,
+  defaultSelected,
 }: {
   title: string;
   data: { id: string; label: string }[];
   onSelect?: (category: string) => void;
+  defaultSelected?: string;
 }) => {
   // State to track selected item (only one item can be selected)
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<string | null>(
+    defaultSelected || null
+  );
 
   // Handle item selection
   const handleSelect = (id: string) => {
@@ -59,7 +63,10 @@ const DropdownUnique = ({
     if (onSelect && newSelectedItem) {
       onSelect(newSelectedItem); // Call onSelect with the selected category
     }
-  };
+    if (onSelect && !newSelectedItem) {
+      onSelect(''); // Call onSelect with the selected
+    };
+  }
 
   // Get the label of the selected item
   const selectedLabel = selectedItem
@@ -74,7 +81,7 @@ const DropdownUnique = ({
           <ChevronDownIcon size={16} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-44" align="start">
+      <DropdownMenuContent className="w-44" align="start" >
         {data.map((item) => (
           <DropdownMenuCheckboxItem
             key={item.id}
@@ -243,8 +250,8 @@ export const Search = () => {
   //TODO already here when select a city
   const [selectedCity, setSelectedCity] = useState<string>('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedRating, setSelectedRating] = useState<string>('');
-  const [selectedGender, setSelectedGender] = useState<string | null>(null);
+  const [selectedRating, setSelectedRating] = useState<string>('most_popular');
+  const [selectedGender, setSelectedGender] = useState<string>('');
   const [name, setName] = useState<string>('');
 
   const [pages, setPages] = useState<GetPage[]>([]);
@@ -317,6 +324,8 @@ export const Search = () => {
                         ex: selectedCategories,
                         city: selectedCity.split(' - ')[0],
                         state: selectedCity.split(' - ')[1],
+                        rate: selectedRating,
+                        gender: selectedGender,
                       });
                     }
                   }}
@@ -328,6 +337,8 @@ export const Search = () => {
                       ex: selectedCategories,
                       city: selectedCity.split(' - ')[0],
                       state: selectedCity.split(' - ')[1],
+                      rate: selectedRating,
+                      gender: selectedGender,
                     });
                   }}
                 >
@@ -348,6 +359,7 @@ export const Search = () => {
               />
               <DropdownUnique
                 title="Avaliação"
+                defaultSelected="most_popular"
                 data={[
                   { id: 'most_popular', label: 'Mais populares' },
                   { id: 'highest_rating', label: 'Melhor avaliação' },

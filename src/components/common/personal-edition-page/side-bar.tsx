@@ -79,7 +79,7 @@ export const Sidebar = ({ data }: { data: User }) => {
                           </p>
                         </div>
                       </TooltipTrigger>
-                      <TooltipContent align="start" className="flex gap-1">
+                      <TooltipContent align="start" className="flex gap-1 bg-white z-50">
                         <Info size={10} strokeWidth={2} className="text-muted mt-0.5" />
                         <p className="w-56 text-muted text-xs text-wrap">Para que você possa usar a aba de Avaliações, é necessário que a página seja publicada.</p>
                       </TooltipContent>

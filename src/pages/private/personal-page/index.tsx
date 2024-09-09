@@ -37,7 +37,7 @@ const CommentsSection = ({ data }: { data: RatingInfo }) => {
   const date = new Date(data.userResponseAt);
 
   return (
-    <div className="rounded-lg border border-primary p-8">
+    <div className="rounded-lg border border-primary p-8 mx-auto">
       <div className="flex justify-between">
         <div className="flex items-center gap-3">
           <AvatarProfileImg src={data.avatar} alt={data.full_name} size={48} />
@@ -57,7 +57,7 @@ const CommentsSection = ({ data }: { data: RatingInfo }) => {
         </div>
       </div>
       <div className="mt-4 rounded-lg pl-16">
-        <p className="text-sm text-muted-foreground">{data.comment}</p>
+        <p className="text-sm text-muted-foreground text-wrap w-56">{data.comment}</p>
       </div>
     </div>
   );
@@ -149,15 +149,14 @@ export const PersonalPage = () => {
                     borderRadius="0.75"
                   />
                   <div className="flex items-center justify-between px-4">
-                    {data?.presentation_video && (
-                      <button
-                        className="flex items-center gap-2"
-                        onClick={handleOpenModal} // Opens the modal on click
-                      >
-                        <img src={playLogo} alt="play" className="h-6 w-6" />
-                        <p className="text-center text-primary">Ver vídeo</p>
-                      </button>
-                    )}
+                    <button
+                      className="flex items-center gap-2"
+                      onClick={handleOpenModal} // Opens the modal on click
+                      style={{ visibility: data?.presentation_video ? 'visible' : 'hidden' }}
+                    >
+                      <img src={playLogo} alt="play" className="h-6 w-6" />
+                      <p className="text-center text-primary">Ver vídeo</p>
+                    </button>
                     {/* Modal to display YouTube video */}
                     {isModalOpen && (
                       <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
@@ -177,75 +176,73 @@ export const PersonalPage = () => {
                     )}
 
                     <div className="flex items-center gap-3">
-                      {data?.instagram && (
-                        <a
-                          className="ml-1 flex gap-2"
-                          href={'https://www.instagram.com/' + data.instagram.replace('@', '')}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <img
-                            src={instagramLogo}
-                            alt="instagram"
-                            className="h-6 w-6"
-                          />
-                        </a>
-                      )}
-                      {data?.whatsapp && (
-                        <>
-                          {!user.id && !client.id ? (
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <img src={wppLogo} alt="whatsapp" className="h-6 w-6 cursor-pointer" />
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>É necessário estar logado</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Para poder enviar mensagens é necessário estar logado no site,
-                                    caso você já tenha uma conta, clique em continuar para logar. Caso
-                                    não tenha, clique em cadastrar.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter
-                                  style={{ display: 'flex', justifyContent: 'space-between' }}
-                                >
-                                  <AlertDialogCancel>Fechar</AlertDialogCancel>
-                                  <div className='flex gap-2'>
-                                    <AlertDialogCancel onClick={() => navigate('/signup')}>Cadastrar</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => navigate('/login')}>Logar</AlertDialogAction>
-                                  </div>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          ) : (
-                            <a
-                              className="ml-1 flex gap-2"
-                              href={`https://wa.me//55${data.whatsapp}?text=Te%20encontrei%20na%20PersonalTech%20e%20estou%20interessado%20no%20seu%20serviço`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <img src={wppLogo} alt="whatsapp" className="h-6 w-6" />
-                            </a>
-                          )}
-                        </>
-                      )}
+                      <a
+                        className="ml-1 flex gap-2"
+                        href={'https://www.instagram.com/' + data.instagram.replace('@', '')}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ visibility: data?.instagram ? 'visible' : 'hidden' }}
+                      >
+                        <img
+                          src={instagramLogo}
+                          alt="instagram"
+                          className="h-6 w-6"
+                        />
+                      </a>
+                      <div
+                        style={{ visibility: data?.whatsapp ? 'visible' : 'hidden' }}
+                      >
+                        {!user.id && !client.id ? (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <img src={wppLogo} alt="whatsapp" className="h-6 w-6 cursor-pointer" />
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>É necessário estar logado</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Para poder enviar mensagens é necessário estar logado no site,
+                                  caso você já tenha uma conta, clique em continuar para logar. Caso
+                                  não tenha, clique em cadastrar.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter
+                                style={{ display: 'flex', justifyContent: 'space-between' }}
+                              >
+                                <AlertDialogCancel>Fechar</AlertDialogCancel>
+                                <div className='flex gap-2'>
+                                  <AlertDialogCancel onClick={() => navigate('/signup')}>Cadastrar</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => navigate('/login')}>Logar</AlertDialogAction>
+                                </div>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        ) : (
+                          <a
+                            className="ml-1 flex gap-2"
+                            href={`https://wa.me//55${data.whatsapp}?text=Te%20encontrei%20na%20PersonalTech%20e%20estou%20interessado%20no%20seu%20serviço`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <img src={wppLogo} alt="whatsapp" className="h-6 w-6" />
+                          </a>
+                        )}
+                      </div>
 
-                      {data?.tiktok && (
-                        <a
-                          className="ml-1 flex gap-2"
-                          href={`https://www.tiktok.com/` + data.tiktok}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                      <a
+                        className="ml-1 flex gap-2"
+                        href={`https://www.tiktok.com/` + data.tiktok}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ visibility: data?.tiktok ? 'visible' : 'hidden' }}
+                      >
 
-                          <img
-                            src={tiktokLogo}
-                            alt="youtube"
-                            className="h-6 w-6"
-                          />
-                        </a>
-                      )}
+                        <img
+                          src={tiktokLogo}
+                          alt="youtube"
+                          className="h-6 w-6"
+                        />
+                      </a>
                     </div>
                   </div>
                   <div className="mt-14 flex flex-col gap-6">
@@ -264,9 +261,9 @@ export const PersonalPage = () => {
                 </div>
 
                 {/* Right column  */}
-                <div className="grow">
-                  <div className="flex grow gap-6">
-                    <div className="mt-14 flex flex-col gap-5">
+                <div className="grow w-full justify-between">
+                  <div className="flex grow gap-6 w-full justify-between">
+                    <div className="mt-14 flex flex-col gap-5 w-full">
                       <div className='flex w-full justify-between items-start'>
                         <div className='flex w-full gap-5 flex-col'>
                           <h1 className={`text-nowrap text-6xl font-bold ${color}`}>
@@ -287,6 +284,9 @@ export const PersonalPage = () => {
                               <div className='flex gap-1'>
                                 {Array.from({ length: data!.ratings.average }, (_, index) => (
                                   <Star key={index} size={16} strokeWidth={0} fill="#FFC728" />
+                                ))}
+                                {Array.from({ length: 5 - data!.ratings.average }, (_, index) => (
+                                  <Star key={index} size={16} strokeWidth={0} fill='#c4c4c4' />
                                 ))}
                               </div>
                             </div>
