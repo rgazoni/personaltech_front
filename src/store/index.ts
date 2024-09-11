@@ -120,6 +120,7 @@ export const initialPage = {
   avatarFile: new File([], ''),
   is_published: false,
   personal_id: '',
+  comments_sort: 'time_desc',
 };
 
 export interface Page {
@@ -140,6 +141,7 @@ export interface Page {
   is_published: boolean;
   cref?: string;
   personal_id: string;
+  comments_sort: string;
 }
 
 interface PageSlice {

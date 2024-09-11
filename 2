@@ -1,13 +1,9 @@
-import { fetchCrefRenew } from '@/api/cref';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useToast } from '@/hooks/use-toast.hook';
-import useAppStore from '@/store';
 import { Label } from '@radix-ui/react-dropdown-menu';
-import { useMutation } from '@tanstack/react-query';
 import { AlertTriangle, CircleCheck, CircleDashed, Lightbulb } from 'lucide-react';
 import { PropsWithChildren, useState } from 'react';
 
@@ -15,18 +11,14 @@ export const CrefModal = ({
   children,
   verificationStage,
   isLoading = false,
-  handleRefetch,
 }: PropsWithChildren<{
   verificationStage: 'valid' | 'invalid' | 'pending' | null,
   isLoading: boolean
-  handleRefetch: () => void
 }>) => {
 
   let cref_text: string;
 
-  const user = useAppStore((state) => state.user);
   const [showDialog, setShowDialog] = useState(false);
-  const { notify } = useToast();
 
   if (verificationStage === 'valid') {
     cref_text = 'Seu CREF foi verificado com sucesso!';
@@ -36,38 +28,14 @@ export const CrefModal = ({
     cref_text = 'Aguardando verificação do seu CREF, pode demorar alguns minutos...';
   }
 
-  const mutateRenewCref = useMutation({
-    mutationKey: ['renewCref'],
-    mutationFn: fetchCrefRenew,
-    onSuccess: (data) => {
-      console.log(data);
-      notify('info', 'Seu CREF será verificado em breve!');
-      handleRefetch();
-    }
-  });
-
   const handleChangeCref = (e: any) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const obj = {
-      type: formData.get('type') as string,
-      cref: formData.get('cref') as string,
-      personal_id: user.id,
-    };
-
-    if (!obj.cref || !obj.type) {
-      notify('error', 'Preencha todos os campos');
-    }
-
-    const cref = obj.cref.replace('-', '').
-      replace('/', '').
-      toUpperCase().trim();
-
-    obj.cref = cref;
-
-    mutateRenewCref.mutate(obj);
-
+    // Se campos nao tiverem preenchidos, exibir erro com notificação
     setShowDialog(false);
+    // TRIM do cref, remover espaços e caracteres especiais, colocar em uppercase
+    // colocar - apos 6 digitos
+    // Se campos estiverem preenchidos, fazer a requisição para a API e atualizar o estado
+    // Tambem apos isso refazer o refetchp para o banco de status
   };
 
   return isLoading ? (
@@ -124,7 +92,7 @@ export const CrefModal = ({
                     <Button
                       variant='link'
                       size='sm'
-                      className='absolute bottom-4 right-4 text-destructive'
+                      className='absolute bottom-4 right-4 text-secondary'
                     >
                       Alterar Cref
                     </Button>
@@ -142,7 +110,7 @@ export const CrefModal = ({
                           <Label id='cref' className="text-right">
                             Pessoa
                           </Label>
-                          <RadioGroup defaultValue="fisica" className='flex gap-4' name='type'>
+                          <RadioGroup defaultValue="fisica" className='flex gap-4'>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="fisica" id="r1" />
                               <Label>Física</Label>
@@ -160,7 +128,6 @@ export const CrefModal = ({
                           <Input
                             id="cref"
                             className="col-span-3"
-                            name="cref"
                           />
                         </div>
                       </div>

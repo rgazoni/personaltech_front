@@ -36,6 +36,12 @@ const nav_bar = (color: string) => {
   const navigate = useNavigate();
   return (
     <div className={`hidden px-6 md:flex lg:flex ${color}`}>
+      <div className='flex items-center justify-center px-5'>
+        <p
+          className={`cursor-pointer text-sm font-light ${color}`}
+          onClick={() => navigate('/')}
+        >Sobre</p>
+      </div>
       <Button
         className={`rounded-full font-normal`}
         onClick={() => navigate('/create')}
@@ -69,7 +75,7 @@ const logged_nav_bar_client = (client: Client, color: string) => {
   const [counterMessage, setCounterMessage] = React.useState(0);
 
   const handleSignOut = async () => {
-    navigate('/search');
+    navigate('/');
     updateClient(initialClient);
 
     await logoutChat();
@@ -164,15 +170,16 @@ const logged_nav_bar_client = (client: Client, color: string) => {
             <div className="absolute -right-4 top-6 z-10 mt-1 w-60 rounded-lg border bg-white shadow-lg">
               <div
                 className="cursor-pointer rounded-md bg-background shadow-md hover:bg-gray-100"
-                onClick={() => navigate('/profile?tab=invites')}
               >
                 <div className="flex flex-col gap-2 p-3">
                   {data?.length! > 0 && (
-                    <p className="text-sm text-secondary">
+                    <p className="text-sm text-secondary"
+                      onClick={() => navigate('/profile?tab=invites')}
+                    >
                       Você tem {data?.length} novas solicitações de avaliação pendentes
                     </p>
                   )}
-                  {!data && (
+                  {!data || data.length === 0 && (
                     <div className='flex gap-1' >
                       <Frown size={16} className='text-muted' />
                       <p className="text-xs text-muted">Você não tem novas notificações.</p>
@@ -226,11 +233,12 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
   const [md5F, setMd5F] = React.useState('');
 
   const handleSignOut = async () => {
-    navigate('/search');
     updateUser(initialUser);
-    updatePage(initialPage);
 
+    navigate('/search');
     await logoutChat();
+
+    updatePage(initialPage);
   };
 
   const handleMessages = () => {
@@ -324,11 +332,12 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
           <div className="absolute -right-4 top-6 z-10 mt-1 w-60 rounded-lg border bg-white shadow-lg">
             <div
               className="cursor-pointer rounded-md bg-background shadow-md hover:bg-gray-100"
-              onClick={() => navigate('/page/edit/rating')}
             >
               <div className="flex flex-col gap-2 p-3">
                 {data?.length! > 0 && (
-                  <p className="text-sm text-secondary">
+                  <p className="text-sm text-secondary"
+                    onClick={() => navigate('/page/edit/rating')}
+                  >
                     Você tem {data?.length} novas solicitações de avaliação.
                   </p>
                 )}
@@ -396,10 +405,6 @@ export const Header = ({ bgColorPP }: { bgColorPP?: string }) => {
         </h1>
       </div>
       <div className='flex items-center'>
-        <p
-          className={`cursor-pointer text-sm font-light ${bgColorPP}`}
-          onClick={() => navigate('/')}
-        >Sobre</p>
         {user.id
           ? logged_nav_bar_personal(page, user, bgColorPP)
           : client.id

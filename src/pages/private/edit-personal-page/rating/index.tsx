@@ -23,6 +23,9 @@ import {
   getRatings,
   updateRequest,
 } from '@/api/ratings';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { updateCommentsSort } from '@/api/page';
 
 const Loader = () => (
   <div className="flex items-center justify-center py-10">
@@ -35,10 +38,12 @@ const RatingCard = ({
   status = 'accepted',
   data,
   onSubmit,
+  onDelete,
 }: {
   status?: string;
   data: RatingInfo;
   onSubmit?: (id: string, type: string) => void;
+  onDelete?: (id: string) => void;
 }) => {
   const date = new Date(data.userResponseAt);
   const user = useAppStore((state) => state.user);
@@ -47,12 +52,21 @@ const RatingCard = ({
     mutationFn: updateRequest,
     mutationKey: ['updateRating', data.trainee_id],
     onSuccess: (data) => {
-      console.log('Updated', data);
+      console.log('Updatasdfdsfed', data);
+      if (onDelete) onDelete(data.trainee_id);
     },
     onError: (error) => {
       console.error('Error updating rating', error);
     },
   });
+
+  const handleDelete = () => {
+    mutateDecision.mutate({
+      trainee_id: data.trainee_id,
+      personal_id: user.id,
+      request: 'rejected',
+    });
+  }
 
   return (
     <div className="rounded-lg border border-primary p-8 ease-in-out">
@@ -77,6 +91,7 @@ const RatingCard = ({
               size={16}
               strokeWidth={2}
               className="cursor-pointer text-muted-foreground"
+              onClick={handleDelete}
             />
           )}
         </div>
@@ -125,10 +140,14 @@ export const PersonalRatingPage = () => {
   const [showDropdown, setShowDropdown] = useState(false); // Manage dropdown visibility
   const { notify } = useToast();
   const user = useAppStore((state) => state.user);
+  const page = useAppStore((state) => state.page);
+  const updatePageField = useAppStore((state) => state.updatePageField);
   const [pendingReqs, setPendingReqs] = useState<PersonalReqs[]>([]);
 
   const [accData, setAccData] = useState<RatingInfo[]>([]);
   const [pendData, setPendData] = useState<RatingInfo[]>([]);
+
+  const [sortType, setSortType] = useState(page.comments_sort);
 
   const handleInviteTrainee = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -231,6 +250,28 @@ export const PersonalRatingPage = () => {
         prev.find((r) => r.trainee_id === id) ? prev : prev.push(decisioned)
         return prev;
       });
+  }
+
+  const handleDelete = (id: string) => {
+    console.log('Deleted', id);
+    console.log(accData?.filter((r) => r.trainee_id !== id));
+    setAccData(accData?.filter((r) => r.trainee_id !== id));
+  }
+
+  const mutateSort = useMutation({
+    mutationFn: updateCommentsSort,
+    mutationKey: ['updateCommentsSort', user.id, sortType],
+    onSuccess: (data) => {
+      console.log('Updated', data);
+    },
+    onError: (error) => {
+      console.error('Error updating rating', error);
+    },
+  });
+
+  const handleSortChange = () => {
+    updatePageField('comments_sort', sortType);
+    mutateSort.mutate({ personal_id: user.id, comments_sort: sortType });
   }
 
   return (
@@ -369,6 +410,7 @@ export const PersonalRatingPage = () => {
                         key={rating.trainee_id}
                         data={rating}
                         onSubmit={handledecision}
+                        onDelete={handleDelete}
                       />
                     ))}
                   </div>
@@ -394,12 +436,33 @@ export const PersonalRatingPage = () => {
                   <Loader />
                 ) : accData && accData.length > 0 ? (
                   <div className="flex flex-col gap-5">
+
+                    <div className='flex flex-col gap-4 pt-4 pb-6 border px-6 rounded-lg'>
+                      <p className='font-bold'>Como você deseja ordenar seus comentários?</p>
+                      <RadioGroup defaultValue={sortType} className='flex gap-5'
+                        onValueChange={(value) => setSortType(value)}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="time_desc" id="r1" />
+                          <Label htmlFor="r1">Ordem Cronológica</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="rating_desc" id="r2" />
+                          <Label htmlFor="r2">Estrelas Decrescente</Label>
+                        </div>
+                      </RadioGroup>
+                      <Button variant='outline' className='w-24 text-xs' size='sm'
+                        onClick={handleSortChange}
+                      >Aplicar</Button>
+                    </div>
+
                     {accData.map((rating) => (
                       <RatingCard
                         status="accepted"
                         key={rating.trainee_id}
                         data={rating}
                         onSubmit={handledecision}
+                        onDelete={handleDelete}
                       />
                     ))}
                   </div>

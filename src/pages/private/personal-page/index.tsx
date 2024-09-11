@@ -9,7 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getPage } from '@/api/page';
 import { Layout } from '@/components/common/layout';
-import { BookOpen, Dumbbell, Info, MapPin, Pin, Star, X } from 'lucide-react';
+import { BookOpen, Dumbbell, Info, MapPin, Star, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { isColorDarker } from '../edit-personal-page/form/color-opts/data';
 import { RatingInfo, getRatings } from '@/api/ratings';
@@ -32,6 +32,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Visitor, Vistor, postVisitor } from '@/api/visitors';
+import { getVisitorId } from '@/lib/visitors';
 
 const CommentsSection = ({ data }: { data: RatingInfo }) => {
   const date = new Date(data.userResponseAt);
@@ -86,6 +88,14 @@ export const PersonalPage = () => {
   const user = useAppStore((state) => state.user);
   const client = useAppStore((state) => state.client);
 
+  const mutateVisitors = useMutation({
+    mutationFn: (data: Visitor) => postVisitor(data),
+    mutationKey: ['visitors', params.path],
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+
   const { data, isLoading } = useQuery({
     queryKey: ['page', params.path],
     queryFn: () => getPage(params.path!),
@@ -101,6 +111,7 @@ export const PersonalPage = () => {
     },
   });
 
+
   const [isColorTonePersonalPageDark, setIsColorTonePersonalPageDark] =
     React.useState<boolean>();
 
@@ -111,6 +122,30 @@ export const PersonalPage = () => {
         isColorDarker(data.background_color)
       );
       mutateComments.mutate({ token: data.personal_id, status: 'accepted' });
+
+      //VISITORS
+      if (client.id !== '') {
+        mutateVisitors.mutate({
+          visitor_id: client.id,
+          visitor_type: 'trainee',
+          page_id: data.id,
+          type: 'visit'
+        });
+      } else if (user.id !== '') {
+        mutateVisitors.mutate({
+          visitor_id: user.id,
+          visitor_type: 'personal',
+          page_id: data.id,
+          type: 'visit'
+        });
+      } else { //User is not logged in
+        mutateVisitors.mutate({
+          visitor_id: getVisitorId(),
+          visitor_type: 'anonymous',
+          page_id: data.id,
+          type: 'visit'
+        });
+      }
     }
   }, [data]);
 
@@ -126,6 +161,24 @@ export const PersonalPage = () => {
     setIsModalOpen(false);
   };
 
+  const handleScheduleClass = () => {
+    if (client.id !== '') {
+      mutateVisitors.mutate({
+        visitor_id: client.id,
+        visitor_type: 'trainee',
+        page_id: data!.id,
+        type: 'schedule'
+      });
+    } else if (user.id !== '') {
+      mutateVisitors.mutate({
+        visitor_id: user.id,
+        visitor_type: 'personal',
+        page_id: data!.id,
+        type: 'schedule'
+      });
+    }
+    navigate('/message?id=' + data!.uid_chat)
+  }
 
   return (
     <div className="relative w-full">
@@ -390,7 +443,7 @@ export const PersonalPage = () => {
                         <Button
                           variant="default"
                           className="flex items-center gap-2 rounded-full px-14 py-8"
-                          onClick={() => navigate('/message?id=' + data.uid_chat)}
+                          onClick={handleScheduleClass}
                         >
                           <p className="text-lg">Agendar aula</p>
                         </Button>

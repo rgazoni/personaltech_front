@@ -8,6 +8,7 @@ import useAppStore, { User } from '@/store';
 import { useToast } from '@/hooks/use-toast.hook';
 import { useNavigate } from 'react-router-dom';
 import { loginChat } from '@/pages/private/message';
+import { useState } from 'react';
 
 export const PersonalData = ({ user }: { user: User }) => {
   const { state } = useEditPersonalContext();
@@ -15,6 +16,7 @@ export const PersonalData = ({ user }: { user: User }) => {
   const updateUserField = useAppStore((state) => state.updateUserField);
   const page = useAppStore((state) => state.page);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const { notify } = useToast();
 
@@ -50,6 +52,7 @@ export const PersonalData = ({ user }: { user: User }) => {
     onError: (e) => {
       // Handle error (e.g., show an error message)
       console.log(e);
+      setIsLoading(false);
       notify('error', 'Erro ao criar página');
     },
   });
@@ -58,6 +61,7 @@ export const PersonalData = ({ user }: { user: User }) => {
     <form
       onSubmit={(e) => {
         e.preventDefault();
+        setIsLoading(true);
         const formData = new FormData(e.target as HTMLFormElement);
         const obj = {
           page_name: formData.get('page_name') as string,
@@ -95,7 +99,8 @@ export const PersonalData = ({ user }: { user: User }) => {
             user.is_cref_verified !== 'valid'
           }
         >
-          {page.is_published ? 'Atualizar página' : 'Publicar página'}
+          {isLoading ? 'Carregando...' :
+            page.is_published ? 'Atualizar página' : 'Publicar página'}
         </Button>
       </div>
     </form>

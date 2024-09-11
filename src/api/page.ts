@@ -44,6 +44,7 @@ export const updatePage = async (page: UpdatePage): Promise<Page> => {
 };
 
 export type GetPage = Page & {
+  id: string;
   uid_chat: string;
   city: string;
   state: string;
@@ -97,5 +98,10 @@ export const fetchPersonalSearch = async (
   console.log(query.toString());
 
   const res = await api.get(`pages/search?${query.toString()}`);
+  return res.data;
+};
+
+export const updateCommentsSort = async (sort: { personal_id: string, comments_sort: string }): Promise<CreatePage> => {
+  const res = await api.put('pages/rate/sort', sort);
   return res.data;
 };

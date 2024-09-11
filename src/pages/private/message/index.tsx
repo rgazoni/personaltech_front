@@ -48,9 +48,13 @@ export const getUnreadMessageCount = async () => {
 }
 
 export const logoutChat = async () => {
-  const logout = await CometChatUIKit.logout();
-  console.log("Logout successful:", logout);
-  return logout;
+  try {
+    const logout = await CometChatUIKit.logout();
+    console.log("Logout successful:", logout);
+    return logout;
+  } catch (error) {
+    console.log("Logout failed with exception:", error);
+  }
 }
 
 export const App1 = () => {

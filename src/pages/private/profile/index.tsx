@@ -152,7 +152,7 @@ const Rate = ({
           </div>
           <div className="flex flex-col gap-4">
             <Label htmlFor="username" className="">
-              Comentários
+              Comentários (opcional)
             </Label>
             <Textarea
               id="comments"
@@ -345,7 +345,7 @@ export const Profile = () => {
           <Tabs defaultValue={tab} className="w-full h-full flex flex-col">
             <TabsList className="grid w-full grid-cols-3 bg-primary text-white">
               <TabsTrigger value="info">Minhas Informações</TabsTrigger>
-              <TabsTrigger value="invites">Convites</TabsTrigger>
+              <TabsTrigger value="invites">Convites de Avaliação</TabsTrigger>
               <TabsTrigger value="password">Alteração de senha</TabsTrigger>
             </TabsList>
             <TabsContent value="info" className="mt-10">
