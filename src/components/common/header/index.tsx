@@ -235,7 +235,7 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
   const handleSignOut = async () => {
     updateUser(initialUser);
 
-    navigate('/search');
+    navigate('/');
     await logoutChat();
 
     updatePage(initialPage);
