@@ -104,6 +104,7 @@ const createClientSlice: StateCreator<ClientSlice, [], [], ClientSlice> = (set) 
 
 // >> START PAGE SLICE
 export const initialPage = {
+  id: '',
   page_name: '',
   expertises: [],
   url: '',
@@ -124,6 +125,7 @@ export const initialPage = {
 };
 
 export interface Page {
+  id: string;
   page_name: string;
   expertises: string[];
   url: string;

@@ -20,6 +20,10 @@ export async function initializeMenuItems() {
       title: "Avaliações",
       path: "/page/edit/rating",
     },
+    {
+      title: "Dashboard",
+      path: "/page/edit/dashboard",
+    },
   ];
 
   return { generalItems };

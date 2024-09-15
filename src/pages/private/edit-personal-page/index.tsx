@@ -3,10 +3,11 @@ import { PersonalFormPage } from "./form";
 import { useParams } from "react-router-dom";
 import { PersonalPreviewPage } from "./preview";
 import { EditPersonalProvider } from "@/providers/edit-personal-page-provider";
-import { PersonalRatingPage } from "./rating";
 import useAppStore from "@/store";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPersonalInfo } from "@/api/user";
+import { PersonalRatingPage } from "./rating";
+import { Dashboard } from "./dashboard";
 
 export const EditPersonalPage = () => {
   let params = useParams<{ path: string }>();
@@ -33,6 +34,7 @@ export const EditPersonalPage = () => {
             {path === 'preview' && <PersonalPreviewPage />}
             {path === 'form' && <PersonalFormPage data={data} />}
             {path === 'rating' && <PersonalRatingPage />}
+            {path === 'dashboard' && <Dashboard />}
           </PersonalEditionPage>
         }
       </EditPersonalProvider>
