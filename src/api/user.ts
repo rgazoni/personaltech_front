@@ -27,6 +27,7 @@ export type CreateClient = {
   avatar: File;
   city: string;
   state: string;
+  gender: string;
 }
 
 export const createUser = async (newUser: CreateUser): Promise<User> => {

@@ -36,6 +36,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { initialState, passwordReducer } from '@/reducers/signup-validation';
 import { updateClientInfo, updatePassword } from '@/api/user';
 import { getTraineeClasses, updateClass } from '@/api/classes';
+import { formatInTimeZone } from 'date-fns-tz';
 
 const Star = ({ selected, onClick }: { selected: any; onClick: any }) => (
   <div>
@@ -128,18 +129,20 @@ const Rate = ({
         onSubmit={(e) => {
           e.preventDefault();
           const formData = new FormData(e.target as HTMLFormElement);
-          //TODO FIX DATE FORMAT
-          const userResponseDate = new Date().toLocaleString('pt-BR', {
-            timeZone: 'America/Sao_Paulo',
-          });
-          const dateObject = new Date(userResponseDate);
+
+          // Get current date in Sao Paulo timezone
+          const timeZone = 'America/Sao_Paulo';
+          const now = new Date();
+          const userResponseDate = formatInTimeZone(now, timeZone, 'yyyy-MM-dd HH:mm:ss');
+          const date = new Date(userResponseDate);
+
           const formValues = {
             personal_id: personal.id,
             trainee_id: cl.id,
             rating,
-            request: 'pending',
+            request: 'accepted',
             comment: (formData.get('comments') as string) || '',
-            userResponseAt: dateObject,
+            userResponseAt: date,
           };
           mutateRate.mutate(formValues);
         }}

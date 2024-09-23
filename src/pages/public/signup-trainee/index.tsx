@@ -17,6 +17,7 @@ import { getCitiesByState, getStates } from '@/api/generic';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectLabel, SelectValue } from '@/components/ui/select';
 import { SelectGroup, SelectTrigger } from '@radix-ui/react-select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 // @types
 type ModalProps = {
@@ -154,6 +155,7 @@ export const SignupTrainee = () => {
   const [selectedState, setSelectedState] = useState('');
   const [cities, setCities] = useState<any[]>([]);
   const [selectedCity, setSelectedCity] = useState('');
+  const [gender, setGender] = useState('');
 
   // Fetch all states using useQuery
   const { data: states, isLoading: loadingStates } = useQuery({
@@ -213,6 +215,7 @@ export const SignupTrainee = () => {
             birthdate: formData.get('birthdate') as unknown as Date,
             email: formData.get('email') as string,
             password: formData.get('password') as string,
+            gender: gender,
             avatar: avatar!,
             city: selectedCity,
             state: selectedState,
@@ -266,7 +269,24 @@ export const SignupTrainee = () => {
             )}
           </div>
         </div>
-
+        <div>
+          <Label className="font-light inline">Sexo</Label>
+          <RadioGroup className='flex gap-10 space-y-2'
+            onValueChange={(value) => setGender(value)}>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="M" id="M" />
+              <Label htmlFor="M" className='font-light'>Masculino</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="F" id="F" />
+              <Label htmlFor="F" className='font-light'>Feminino</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="NB" id="NB" />
+              <Label htmlFor="NB" className='font-light'>Não binário</Label>
+            </div>
+          </RadioGroup>
+        </div>
         <div className="grid grid-cols-2 gap-5">
           <div>
             <Label htmlFor="state" className="font-light">

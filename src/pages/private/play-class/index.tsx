@@ -146,6 +146,7 @@ export const PlayClass = () => {
     mutateFinishClass.mutate({
       id: class_id,
       status: 'finished',
+      elapsed_time: elapsedTime ?? 0,
     })
   }
 

@@ -9,6 +9,7 @@ export type Classes = {
   id: string;
   trainee_id: string;
   personal_id: string;
+  elapsed_time: number;
   status: string;
   createdAt: Date;
   updateAt: Date;
@@ -67,7 +68,6 @@ export const deleteClass = async (r: { class_id: string }): Promise<Classes | st
 };
 
 export const updateClass = async (r: Partial<Classes>): Promise<Classes> => {
-  console.log(r);
   const res = await api.put('classes/update', r);
   return res.data;
 }

@@ -1,4 +1,3 @@
-import { TrendingUp } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import {
   Card,
@@ -79,7 +78,7 @@ export const AgeChart = ({ data }: { data: Age }) => {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="Usuários" fill="hsl(var(--primary))" radius={8} label={{ position: "insideBottom" }} />
+            <Bar dataKey="Usuários" fill="hsl(var(--primary))" radius={8} label={{ position: "insideBottom", offset: 10, fill: "#000" }} />
           </BarChart>
         </ChartContainer>
       </CardContent>

@@ -8,6 +8,12 @@ export type Visitor = {
   type: 'visit' | 'schedule';
 }
 
+export type Gender = {
+  gender: string;
+  count: number;
+  abrv: string;
+}
+
 export const postVisitor = async (data: Visitor): Promise<any[]> => {
   console.log(data);
   const res = await api.post('visitors/track', data);
@@ -27,8 +33,20 @@ export const getAge = async (page_id: string): Promise<Age> => {
   return res.data;
 }
 
+export const getGender = async (page_id: string): Promise<Gender> => {
+  const res = await api.get(`visitors/gender/${page_id}`);
+  console.log(res.data);
+  return res.data;
+}
+
 export const getRegions = async (page_id: string): Promise<{ city: string, state: string, count: number }[]> => {
   const res = await api.get(`visitors/regions/${page_id}`);
+  console.log(res.data);
+  return res.data;
+}
+
+export const getElapsedTime = async (page_id: string): Promise<{ elapsed_time: number }> => {
+  const res = await api.get(`visitors/hours/${page_id}`);
   console.log(res.data);
   return res.data;
 }
