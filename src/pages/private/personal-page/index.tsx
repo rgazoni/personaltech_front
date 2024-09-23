@@ -32,7 +32,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Visitor, Vistor, postVisitor } from '@/api/visitors';
+import { Visitor, postVisitor } from '@/api/visitors';
 import { getVisitorId } from '@/lib/visitors';
 
 const CommentsSection = ({ data }: { data: RatingInfo }) => {

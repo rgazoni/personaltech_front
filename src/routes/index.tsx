@@ -10,6 +10,7 @@ import { Search } from '@/pages/public/search';
 import { SignupTrainee } from '@/pages/public/signup-trainee';
 import { Profile } from '@/pages/private/profile';
 import { App1 } from '@/pages/private/message';
+import { PlayClass } from '@/pages/private/play-class';
 
 export const AppRoutes = () => {
   return (
@@ -25,6 +26,11 @@ export const AppRoutes = () => {
           index
           path={Routes.PAGE_EDITION}
           element={<EditPersonalPage />}
+        />
+        <Route
+          index
+          path={Routes.PLAY_CLASS}
+          element={<PlayClass />}
         />
       </Route>
 

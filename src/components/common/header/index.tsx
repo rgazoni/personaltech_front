@@ -11,6 +11,7 @@ import { AvatarProfileImg } from '../avatar-profile-img';
 import {
   Bell,
   ChevronDown,
+  CirclePlay,
   Eye,
   Frown,
   LogOut,
@@ -122,8 +123,8 @@ const logged_nav_bar_client = (client: Client, color: string) => {
     const intervalId = setInterval(fetchUnreadMessages, 60000); // Update every minute
 
     return () => clearInterval(intervalId); // Clean up on unmount
-  }, []);
 
+  }, []);
 
   return (
     <div
@@ -272,7 +273,6 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
   });
 
   useEffect(() => {
-    console.log('data ', data);
     if (isSuccess && data?.length > 0) {
       const newMd5 = md5(JSON.stringify(data));
       setMd5F(newMd5);
@@ -286,26 +286,30 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
     }
   }, [isSuccess, data]);
 
+  const handlePlayClass = () => navigate('/play');
 
   return (
     <div
       className={`hidden gap-6 pl-6 md:flex md:items-center md:justify-center lg:flex ${color}`}
     >
       {page.is_published && (
-        <div className='relative'>
-          <MessageCircle
-            size={20}
-            className={`cursor-pointer ${color}`}
-            strokeWidth={2}
-            onClick={handleMessages}
-          />
+        <>
+          <CirclePlay size={20} className={`cursor-pointer ${color}`} strokeWidth={2} onClick={handlePlayClass} />
+          <div className='relative'>
+            <MessageCircle
+              size={20}
+              className={`cursor-pointer ${color}`}
+              strokeWidth={2}
+              onClick={handleMessages}
+            />
 
-          {counterMessage > 0 && (
-            <div className="absolute -right-2 -top-2 flex h-3 w-3 items-center justify-center rounded-full bg-primary">
-              <span className="text-[8px] font-bold">{counterMessage}</span>
-            </div>
-          )}
-        </div>
+            {counterMessage > 0 && (
+              <div className="absolute -right-2 -top-2 flex h-3 w-3 items-center justify-center rounded-full bg-primary">
+                <span className="text-[8px] font-bold">{counterMessage}</span>
+              </div>
+            )}
+          </div>
+        </>
       )}
       <div className="relative">
         <div

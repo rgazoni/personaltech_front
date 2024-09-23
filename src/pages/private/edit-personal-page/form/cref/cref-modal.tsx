@@ -87,7 +87,6 @@ export const CrefModal = ({
       }
       <section
         className={`flex w-full flex-grow
-          relative inset-0 z-10
           ${verificationStage === 'valid'
             ? 'border-silver-tree-400'
             : verificationStage === 'invalid'
@@ -95,13 +94,13 @@ export const CrefModal = ({
               : 'border-amber-400'
           } justify-between rounded border-2 p-4 shadow-sm`}
       >
-        <div className='flex-none'>{children}</div>
+        <div className='flex-none h-full'>{children}</div>
         <div className='w-full h-full grow flex'>
           <div className="flex flex-col gap-1 p-2 h-full grow justify-between items-end">
             {verificationStage === 'valid' && <CircleCheck size={20} className="text-primary" />}
             {verificationStage === 'pending' && <CircleDashed size={20} className="animate-spin text-amber-400" />}
             {verificationStage === 'invalid' && (
-              <div className='flex flex-col items-end justify-between h-full'>
+              <div className='flex flex-row-reverse justify-center items-center h-full -mt-3'>
                 <TooltipProvider>
                   <Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
@@ -124,7 +123,7 @@ export const CrefModal = ({
                     <Button
                       variant='link'
                       size='sm'
-                      className='absolute bottom-4 right-4 text-destructive'
+                      className='text-destructive py-0'
                     >
                       Alterar Cref
                     </Button>

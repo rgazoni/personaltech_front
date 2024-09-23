@@ -24,6 +24,10 @@ export async function initializeMenuItems() {
       title: "Dashboard",
       path: "/page/edit/dashboard",
     },
+    {
+      title: "Agendamento",
+      path: "/page/edit/schedule",
+    },
   ];
 
   return { generalItems };

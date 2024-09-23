@@ -35,6 +35,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { initialState, passwordReducer } from '@/reducers/signup-validation';
 import { updateClientInfo, updatePassword } from '@/api/user';
+import { getTraineeClasses, updateClass } from '@/api/classes';
 
 const Star = ({ selected, onClick }: { selected: any; onClick: any }) => (
   <div>
@@ -289,6 +290,7 @@ export const Profile = () => {
   const client = useAppStore((state) => state.client);
   const [searchParams, _] = useSearchParams();
   const { notify } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -331,10 +333,41 @@ export const Profile = () => {
     },
   });
 
+  const { data: traineeClasses, isSuccess, refetch, isRefetching } = useQuery({
+    queryKey: ['traineeClasses', client.id],
+    queryFn: () => getTraineeClasses(client.id),
+  });
+
+  //TODO send invite to trainee with mutation
+  const mutateRespondClass = useMutation({
+    mutationFn: updateClass,
+    mutationKey: ['updateClass'],
+    onSuccess: () => {
+      refetch();
+    },
+    onError: (error) => {
+      console.error('Error sending invite', error);
+      notify('error', 'Erro ao enviar convite. Tente novamente mais tarde.');
+    },
+  });
+
+  const handleAcceptClass = (id: string) => {
+    mutateRespondClass.mutate({
+      id,
+      status: 'accepted',
+    });
+  }
+  const handleRejectClass = (id: string) => {
+    mutateRespondClass.mutate({
+      id,
+      status: 'rejected',
+    });
+  }
+
   return (
-    <div className='h-dvh'>
-      <Layout className='h-fit flex flex-col gap-12'>
-        <div className="flex flex-col justify-between gap-4 px-24 h-full flex-grow">
+    <div className='min-h-screen'>
+      <Layout className='h-fit flex flex-col grow min-h-screen'>
+        <div className="flex flex-col gap-8 px-24 h-full flex-grow">
           <div>
             <h1 className="text-3xl font-light text-secondary">
               {greeting} <span>{client.full_name},</span>
@@ -342,7 +375,54 @@ export const Profile = () => {
             <p className="pt-2 text-muted">Que bom tê-la aqui de novo!</p>
           </div>
 
-          <Tabs defaultValue={tab} className="w-full h-full flex flex-col">
+          {isSuccess && traineeClasses.length > 0 && !isRefetching ? (
+            <Card className="flex flex-col pt-6">
+              <CardContent className="space-y-2">
+                <h3 className="text-2xl font-light text-secondary">
+                  Requisições de Aula
+                </h3>
+                <p className="text-muted">
+                  Responda a requisição do professor para que ele possa iniciar a aula.
+                </p>
+              </CardContent>
+              {traineeClasses.map((c) => (
+                <CardContent key={c.class_id} className="space-y-2">
+                  <div className="flex w-fit flex-col gap-4 rounded-lg border bg-secondary-foreground p-5">
+                    <div className="flex w-full gap-3">
+                      <div className="flex w-full items-center gap-4">
+                        <AvatarProfileImg
+                          src={c.avatar}
+                          alt={c.page_name}
+                          size={64}
+                        />
+                        <div className='space-y-2'>
+                          <h5 className="text-xs text-secondary">{c.page_name}</h5>
+                          <div className="flex gap-2">
+                            <Button variant="outline" className="text-xs" size="sm" onClick={() => handleRejectClass(c.class_id)}>
+                              Rejeitar
+                            </Button>
+                            <Button className="text-xs" size="sm" onClick={() => handleAcceptClass(c.class_id)}>
+                              Aceitar
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      <ExternalLink
+                        size={14}
+                        className="cursor-pointer text-secondary"
+                        onClick={() => navigate('/u/' + c.url)}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              ))}
+            </Card>
+          ) : (
+            <></>
+          )
+          }
+
+          <Tabs defaultValue={tab} className="w-full h-full flex flex-col mt-5">
             <TabsList className="grid w-full grid-cols-3 bg-primary text-white">
               <TabsTrigger value="info">Minhas Informações</TabsTrigger>
               <TabsTrigger value="invites">Convites de Avaliação</TabsTrigger>

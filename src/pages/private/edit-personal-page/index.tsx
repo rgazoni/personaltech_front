@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchPersonalInfo } from "@/api/user";
 import { PersonalRatingPage } from "./rating";
 import { Dashboard } from "./dashboard";
+import Schedule from "./schedule";
 
 export const EditPersonalPage = () => {
   let params = useParams<{ path: string }>();
@@ -35,6 +36,7 @@ export const EditPersonalPage = () => {
             {path === 'form' && <PersonalFormPage data={data} />}
             {path === 'rating' && <PersonalRatingPage />}
             {path === 'dashboard' && <Dashboard />}
+            {path === 'schedule' && <Schedule />}
           </PersonalEditionPage>
         }
       </EditPersonalProvider>

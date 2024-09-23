@@ -35,8 +35,6 @@ export const Sidebar = ({ data }: { data: User }) => {
       setGeneralItems(generalItems);
     }
     setup();
-    console.log('data');
-    console.log(pageData);
   }, []);
 
   useEffect(() => {
@@ -55,7 +53,7 @@ export const Sidebar = ({ data }: { data: User }) => {
         <div className="flex flex-col items-start">
           <div className="flex flex-col gap-3">
             {generalItems.map((item, index) => (
-              item.title === 'Avaliações' ? ( // Handling 'Avaliações' menu item
+              item.title === 'Avaliações' || item.title === 'Dashboard' || item.title === 'Agendamento' ? ( // Handling 'Avaliações' menu item
                 pageData && pageData.is_published ? ( // Checking if dataPage exists and is published
                   <Link to={item.path} key={index}>
                     <div
@@ -79,7 +77,7 @@ export const Sidebar = ({ data }: { data: User }) => {
                           </p>
                         </div>
                       </TooltipTrigger>
-                      <TooltipContent align="start" className="flex gap-1 bg-white z-50">
+                      <TooltipContent align="start" className="flex gap-1 bg-white" style={{ zIndex: 9999, background: "#FFF" }}>
                         <Info size={10} strokeWidth={2} className="text-muted mt-0.5" />
                         <p className="w-56 text-muted text-xs text-wrap">Para que você possa usar a aba de Avaliações, é necessário que a página seja publicada.</p>
                       </TooltipContent>
