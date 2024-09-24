@@ -60,10 +60,10 @@ const RatingCard = ({
     },
   });
 
-  const handleDelete = () => {
+  const handleDelete = (reating_id: string) => {
+    console.log('Deleted', reating_id);
     mutateDecision.mutate({
-      trainee_id: data.trainee_id,
-      personal_id: user.id,
+      id: reating_id,
       request: 'rejected',
     });
   }
@@ -91,7 +91,7 @@ const RatingCard = ({
               size={16}
               strokeWidth={2}
               className="cursor-pointer text-muted-foreground"
-              onClick={handleDelete}
+              onClick={() => handleDelete(data.id)}
             />
           )}
         </div>
@@ -158,8 +158,6 @@ export const PersonalRatingPage = () => {
       setSearchResults([]); // Clear previous results
       return;
     }
-
-    console.log('Sending invite to', value);
     mutateRating.mutate(value);
   };
 
@@ -210,18 +208,13 @@ export const PersonalRatingPage = () => {
       notify('success', 'Convite deletado com sucesso ✉️');
       if ((data as Rating).trainee_id !== undefined)
         setPendingReqs(
-          pendingReqs.filter((r) => r.id !== (data as Rating).trainee_id)
+          pendingReqs.filter((r) => r.trainee_id !== (data as Rating).trainee_id)
         );
     },
     onError: (error) => {
       notify('error', 'Não foi possível deletar o convite. Tente novamente.');
       console.error('Error deleting invite', error);
     },
-  });
-
-  const { data: pendingData, isLoading: isLoadingPending } = useQuery({
-    queryKey: ['pendingReqs', user.token],
-    queryFn: () => getRatings({ token: user.id, status: 'pending' }),
   });
 
   const { data: acceptedData, isLoading: isLoadingAccepted } = useQuery({
@@ -232,10 +225,6 @@ export const PersonalRatingPage = () => {
   useEffect(() => {
     if (data) setPendingReqs(data);
   }, [data]);
-
-  useEffect(() => {
-    if (pendingData) setPendData(pendingData);
-  }, [pendingData]);
 
   useEffect(() => {
     if (acceptedData) setAccData(acceptedData);
@@ -359,7 +348,7 @@ export const PersonalRatingPage = () => {
               ) : (
                 pendingReqs.map((req) => (
                   <div
-                    key={req.id}
+                    key={req.trainee_id}
                     className="flex w-fit items-center gap-2 rounded-full border bg-secondary-foreground px-2 py-1"
                   >
                     <AvatarProfileImg
@@ -379,8 +368,7 @@ export const PersonalRatingPage = () => {
                       className="cursor-pointer text-muted-foreground"
                       onClick={() => {
                         mutateDeleteInvite.mutate({
-                          trainee_id: req.id,
-                          personal_id: user.id,
+                          id: req.rating_id,
                         });
                       }}
                     />
@@ -391,38 +379,6 @@ export const PersonalRatingPage = () => {
           )}
 
           <Accordion type="multiple" className="flex flex-col gap-10">
-            <AccordionItem value="item-1">
-              <AccordionTrigger>
-                <h3 className="text-xl font-bold text-secondary">
-                  {isLoadingPending || pendData?.length === 0
-                    ? 'Avaliações Pendentes'
-                    : `Avaliações Pendentes (${pendData?.length})`}
-                </h3>
-              </AccordionTrigger>
-              <AccordionContent>
-                {isLoadingPending ? (
-                  <Loader />
-                ) : pendData && pendData.length > 0 ? (
-                  <div className="flex flex-col gap-5">
-                    {pendData.map((rating) => (
-                      <RatingCard
-                        status="pending"
-                        key={rating.trainee_id}
-                        data={rating}
-                        onSubmit={handledecision}
-                        onDelete={handleDelete}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="rounded-xl border py-5">
-                    <p className="text-center text-xs text-muted">
-                      Nenhuma avaliação pendente
-                    </p>
-                  </div>
-                )}
-              </AccordionContent>
-            </AccordionItem>
             <AccordionItem value="item-2">
               <AccordionTrigger>
                 <h3 className="text-xl font-bold text-secondary">

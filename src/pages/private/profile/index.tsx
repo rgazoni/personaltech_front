@@ -36,7 +36,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { initialState, passwordReducer } from '@/reducers/signup-validation';
 import { updateClientInfo, updatePassword } from '@/api/user';
 import { getTraineeClasses, updateClass } from '@/api/classes';
-import { formatInTimeZone } from 'date-fns-tz';
+import { format, formatInTimeZone } from 'date-fns-tz';
+import { deleteBooking, getTraineeSchedules } from '@/api/schedule';
 
 const Star = ({ selected, onClick }: { selected: any; onClick: any }) => (
   <div>
@@ -106,7 +107,6 @@ const Rate = ({
       console.error('Error deleting invite', error);
     },
   });
-  const cl = useAppStore((state) => state.client);
 
   return (
     <DialogContent className="sm:max-w-[425px]">
@@ -137,8 +137,7 @@ const Rate = ({
           const date = new Date(userResponseDate);
 
           const formValues = {
-            personal_id: personal.id,
-            trainee_id: cl.id,
+            id: personal.rating_id,
             rating,
             request: 'accepted',
             comment: (formData.get('comments') as string) || '',
@@ -175,6 +174,106 @@ const Rate = ({
   );
 };
 
+const Schedule = () => {
+  const client = useAppStore((state) => state.client);
+  const navigate = useNavigate();
+  const { notify } = useToast();
+
+  const { data, isPending, isSuccess, refetch } = useQuery({
+    queryKey: ['bookings', client.id],
+    queryFn: () => getTraineeSchedules(client.id),
+    refetchOnWindowFocus: true,
+  });
+
+  const mutateDeleteSchedule = useMutation({
+    mutationFn: deleteBooking,
+    mutationKey: ['deleteBooking'],
+    onSuccess: () => {
+      notify('success', 'Convite deletado com sucesso ✉️');
+      refetch();
+    },
+    onError: (error) => {
+      console.error('Error deleting invite', error);
+    },
+  });
+
+  const handleDelete = (id: string) => {
+    mutateDeleteSchedule.mutate(id)
+  }
+  const handleChat = (id: string) => {
+    navigate('/message?id=' + id)
+  }
+
+  // Loader handling and rendering the invites
+  return (
+    <Card className="grid grid-cols-3 pt-6">
+      {isPending ? (
+        // Show loading indicator while data is being fetched
+        <div className="col-span-3 flex justify-center">
+          <p className="text-muted">Carregando convites...</p>
+        </div>
+      ) : isSuccess && data.length > 0 ? (
+        // Show trainee requests if available
+        data.map((req) => (
+          <CardContent key={req.booking.id} className="space-y-2">
+            <div className="flex w-72 flex-col gap-4 rounded-lg border bg-secondary-foreground p-5">
+              <div className="flex w-full">
+                <div className="flex w-full items-center gap-2">
+                  <AvatarProfileImg
+                    src={req.professional.avatar}
+                    alt={req.professional.page_name}
+                    size={64}
+                  />
+
+
+                  <div>
+                    <h5 className="text-xs text-secondary">{req.professional.page_name}</h5>
+                    <p className="text-xs text-muted">Data: {format(new Date(req.booking.startDatetime), 'dd/MM/yyyy')}</p>
+                    <p className="text-xs text-muted">
+                      Horário:{' '}
+                      {format(new Date(req.booking.startDatetime), 'HH:mm')} -{' '}
+                      {format(new Date(req.booking.endDatetime), 'HH:mm')}
+                    </p>
+                  </div>
+                </div>
+                <ExternalLink
+                  size={14}
+                  className="cursor-pointer text-secondary"
+                  onClick={() => navigate('/u/' + req.professional.url)}
+                />
+              </div>
+              <div className="flex w-full justify-end gap-3">
+                <Button
+                  variant="ghost"
+                  className="cursor-pointer text-xs"
+                  onClick={() => handleDelete(req.booking.id)}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  variant="default"
+                  className="cursor-pointer px-8 text-xs"
+                  onClick={() => handleChat(req.booking.personal.uid_chat)}
+                >
+                  Conversar
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        ))
+      ) : (
+        // Show message if there are no invites
+        <div className="col-span-3">
+          <p className="pb-8 pt-3 text-center text-muted">
+            Você não possui nenhum agendamento 🗓️
+          </p>
+        </div>
+      )}
+    </Card>
+  );
+};
+
+
 const Invites = () => {
   const client = useAppStore((state) => state.client);
   const [traineeReqs, setTraineeReqs] = useState<TraineeReqs[]>([]);
@@ -205,16 +304,15 @@ const Invites = () => {
     },
   });
 
-  const handleDelete = (personal_id: string) => {
+  const handleDelete = (rating_id: string) => {
     mutateDeleteInvite.mutate({
-      trainee_id: client.id,
-      personal_id: personal_id,
+      id: rating_id,
     });
-    setTraineeReqs((prevReqs) => prevReqs.filter((r) => r.id !== personal_id));
+    setTraineeReqs((prevReqs) => prevReqs.filter((r) => r.rating_id !== rating_id));
   };
 
-  const handlePop = (id: string) => {
-    setTraineeReqs((prevReqs) => prevReqs.filter((r) => r.id !== id));
+  const handlePop = (rating_id: string) => {
+    setTraineeReqs((prevReqs) => prevReqs.filter((r) => r.rating_id !== rating_id));
   };
 
   // Loader handling and rendering the invites
@@ -228,7 +326,7 @@ const Invites = () => {
       ) : isSuccess && traineeReqs.length > 0 ? (
         // Show trainee requests if available
         traineeReqs.map((req) => (
-          <CardContent key={req.id} className="space-y-2">
+          <CardContent key={req.rating_id} className="space-y-2">
             <div className="flex w-72 flex-col gap-4 rounded-lg border bg-secondary-foreground p-5">
               <div className="flex w-full">
                 <div className="flex w-full items-center gap-2">
@@ -252,7 +350,7 @@ const Invites = () => {
                 <Button
                   variant="ghost"
                   className="cursor-pointer text-xs"
-                  onClick={() => handleDelete(req.id)}
+                  onClick={() => handleDelete(req.rating_id)}
                 >
                   Recusar
                 </Button>
@@ -269,7 +367,7 @@ const Invites = () => {
                   <Rate
                     personal={req}
                     onDialog={setIsDialogOpen}
-                    canPop={() => handlePop(req.id)}
+                    canPop={() => handlePop(req.rating_id)}
                   />
                 </Dialog>
               </div>
@@ -426,9 +524,10 @@ export const Profile = () => {
           }
 
           <Tabs defaultValue={tab} className="w-full h-full flex flex-col mt-5">
-            <TabsList className="grid w-full grid-cols-3 bg-primary text-white">
+            <TabsList className="grid w-full grid-cols-4 bg-primary text-white">
               <TabsTrigger value="info">Minhas Informações</TabsTrigger>
               <TabsTrigger value="invites">Convites de Avaliação</TabsTrigger>
+              <TabsTrigger value="schedule">Agendamentos</TabsTrigger>
               <TabsTrigger value="password">Alteração de senha</TabsTrigger>
             </TabsList>
             <TabsContent value="info" className="mt-10">
@@ -491,6 +590,9 @@ export const Profile = () => {
             </TabsContent>
             <TabsContent value="invites" className="mt-10 h-full grow">
               <Invites />
+            </TabsContent>
+            <TabsContent value="schedule" className="mt-10 h-full grow">
+              <Schedule />
             </TabsContent>
             <TabsContent value="password" className="mt-10">
               <Card>

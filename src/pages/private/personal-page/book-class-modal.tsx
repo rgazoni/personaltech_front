@@ -11,6 +11,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { fetchAvailableSlots, createBooking } from '@/api/schedule';
 import useAppStore from '@/store';
 import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast.hook';
 
 interface BookClassModalProps {
   personal_id: string;
@@ -22,6 +23,7 @@ const BookClassModal: React.FC<BookClassModalProps> = ({ personal_id, isOpen, on
   const trainee = useAppStore((state) => state.client);
   const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
   const [selectedSlot, setSelectedSlot] = useState<{ start: string; end: string } | null>(null);
+  const { notify } = useToast();
 
   const {
     data: availableSlots,
@@ -37,11 +39,12 @@ const BookClassModal: React.FC<BookClassModalProps> = ({ personal_id, isOpen, on
   const bookingMutation = useMutation({
     mutationFn: createBooking,
     onSuccess: () => {
-      alert('Booking confirmed!');
+      notify('success', 'Agendamento confirmado!');
       onClose();
     },
     onError: (error: any) => {
-      alert('Error booking class: ' + error.message);
+      notify('error', 'Erro ao agendar aula! ');
+      console.error(error.message);
     },
   });
 

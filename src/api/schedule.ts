@@ -7,7 +7,6 @@ export const createAvailabilityRule = async (newAvailability: AvailabilityRule) 
   return response.data;
 }
 
-
 export interface Booking {
   id: string;
   personal_id: string;
@@ -59,3 +58,27 @@ export const createBooking = async (bookingData: {
   return response.data;
 };
 
+export type BookingTrainee = {
+  booking: {
+    endDatetime: string;
+    id: string;
+    personal: {
+      uid_chat: string;
+    }
+    startDatetime: string;
+    status: string;
+  }
+  professional: {
+    avatar: string;
+    page_name: string;
+    url: string;
+    personal_id: string;
+  }
+}
+
+export const getTraineeSchedules = async (token: string): Promise<BookingTrainee[]> => {
+  console.log(token);
+  const res = await api.get('schedule/trainee?token=' + token);
+  console.log(res.data);
+  return res.data;
+}

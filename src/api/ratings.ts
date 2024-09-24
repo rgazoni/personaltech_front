@@ -1,6 +1,10 @@
 import { api } from ".";
 
 type Invite = {
+  id: string;
+}
+
+type CreateInvite = {
   trainee_id: string;
   personal_id: string;
 }
@@ -17,6 +21,7 @@ export type Rating = {
 }
 
 export type RatingInfo = {
+  id: string;
   full_name: string;
   rating: number;
   avatar: string;
@@ -26,19 +31,21 @@ export type RatingInfo = {
 }
 
 export type PersonalReqs = {
-  id: string;
+  rating_id: string;
+  trainee_id: string;
   full_name: string;
   avatar: string;
 }
 
 export type TraineeReqs = {
-  id: string;
+  rating_id: string;
+  personal_id: string;
   page_name: string;
   url: string;
   avatar: string;
 }
 
-export const createInvite = async (reqB: Invite): Promise<Rating | string> => {
+export const createInvite = async (reqB: CreateInvite): Promise<Rating | string> => {
   try {
     const res = await api.post('ratings/create', reqB);
     console.log(res.data);
@@ -54,8 +61,7 @@ export const createInvite = async (reqB: Invite): Promise<Rating | string> => {
 export const deleteInvite = async (r: Invite): Promise<Rating | string> => {
   const res = await api.delete('ratings/delete', {
     params: {
-      trainee_id: r.trainee_id,
-      personal_id: r.personal_id,
+      id: r.id,
     },
   });
   return res.data;
