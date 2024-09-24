@@ -17,6 +17,7 @@ export const initialUser = {
   city: '',
   sawNot: false,
   md5Not: '',
+  scheduling_system: '',
 };
 
 export interface User {
@@ -34,6 +35,7 @@ export interface User {
   city: string;
   sawNot: boolean;
   md5Not: string;
+  scheduling_system: string;
 }
 
 interface UserSlice {

@@ -83,3 +83,8 @@ export const updateClientInfo = async ({ id, client }: { id: string, client: Par
   const res = await api.put(`trainee/${id}`, client);
   return res.data;
 }
+
+export const schedulePersonalPreference = async (personal_id: string, preference: string): Promise<void> => {
+  const res = await api.put(`personal/schedule?personal_id=${personal_id}&schedule=${preference}`);
+  return res.data;
+}

@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/tooltip"
 import { Visitor, postVisitor } from '@/api/visitors';
 import { getVisitorId } from '@/lib/visitors';
+import BookClassModal from './book-class-modal';
 
 const CommentsSection = ({ data }: { data: RatingInfo }) => {
   const date = new Date(data.userResponseAt);
@@ -152,6 +153,14 @@ export const PersonalPage = () => {
   const color = isColorTonePersonalPageDark ? 'text-white' : 'text-secondary';
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenVideo, setIsModalOpenVideo] = useState(false);
+
+  const handleOpenModalVideo = () => {
+    setIsModalOpenVideo(true);
+  }
+  const handleCloseModalVideo = () => {
+    setIsModalOpenVideo(false);
+  }
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -204,18 +213,18 @@ export const PersonalPage = () => {
                   <div className="flex items-center justify-between px-4">
                     <button
                       className="flex items-center gap-2"
-                      onClick={handleOpenModal} // Opens the modal on click
+                      onClick={handleOpenModalVideo} // Opens the modal on click
                       style={{ visibility: data?.presentation_video ? 'visible' : 'hidden' }}
                     >
                       <img src={playLogo} alt="play" className="h-6 w-6" />
                       <p className="text-center text-primary">Ver vídeo</p>
                     </button>
                     {/* Modal to display YouTube video */}
-                    {isModalOpen && (
+                    {isModalOpenVideo && (
                       <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
                       >
                         <div className="bg-white p-4 rounded-lg shadow-lg">
-                          <X className="absolute top-5 right-5 m-2 text-white cursor-pointer" onClick={handleCloseModal} />
+                          <X className="absolute top-5 right-5 m-2 text-white cursor-pointer" onClick={handleCloseModalVideo} />
                           <iframe
                             width="560"
                             height="315"
@@ -440,12 +449,63 @@ export const PersonalPage = () => {
                           </AlertDialogContent>
                         </AlertDialog>
                       ) : (
+                        <div>
+                          <Button
+                            variant="default"
+                            className="flex items-center gap-2 rounded-full px-14 py-8"
+                            onClick={data.scheduling_system === 'No' ? handleScheduleClass : handleOpenModal}
+                          >
+                            <p className="text-lg">Agendar aula</p>
+                          </Button>
+
+                          {/* Book Class Modal */}
+                          <BookClassModal
+                            personal_id={data.personal_id}
+                            isOpen={isModalOpen}
+                            onClose={handleCloseModal}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div className='mt-16 flex items-center'>
+                      <p>Tem mais alguma alguma dúvida?</p>
+                      {!user.id && !client.id ? (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="link"
+                              className="rounded-full"
+                            >
+                              Entrar em contato
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>É necessário estar logado</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Para poder enviar mensagens é necessário estar logado no site,
+                                caso você já tenha uma conta, clique em continuar para logar. Caso
+                                não tenha, clique em cadastrar.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter
+                              style={{ display: 'flex', justifyContent: 'space-between' }}
+                            >
+                              <AlertDialogCancel>Fechar</AlertDialogCancel>
+                              <div className='flex gap-2'>
+                                <AlertDialogCancel onClick={() => navigate('/signup')}>Cadastrar</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => navigate('/login')}>Logar</AlertDialogAction>
+                              </div>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      ) : (
                         <Button
-                          variant="default"
-                          className="flex items-center gap-2 rounded-full px-14 py-8"
-                          onClick={handleScheduleClass}
+                          variant="link"
+                          className="rounded-full"
+                          onClick={() => navigate('/message?id=' + data.uid_chat)}
                         >
-                          <p className="text-lg">Agendar aula</p>
+                          Entrar em contato
                         </Button>
                       )}
                     </div>

@@ -16,7 +16,7 @@ const AvailableSchedules: React.FC = () => {
   } = useQuery({
     queryKey: ['availableSlots', personal?.id, selectedDate],
     queryFn: () => fetchAvailableSlots(personal?.id || '', selectedDate),
-    enabled: !!personal?.id && !!selectedDate,
+    enabled: !!selectedDate,
   });
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,20 +25,20 @@ const AvailableSchedules: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div>Loading available schedules...</div>;
+    return <div>Carregando agendamentos disponíveis...</div>;
   }
 
   if (isError) {
-    return <div>Error fetching available schedules.</div>;
+    return <div>Error ao carregar agendamentos.</div>;
   }
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Available Schedules</h2>
+      <h2 className="text-xl font-semibold mb-4">Agendamentos disponíveis</h2>
 
       {/* Date Picker */}
       <div className="mb-4">
-        <label className="block font-medium mb-2">Select Date</label>
+        <label className="block font-medium mb-2">Selecione uma data</label>
         <input
           type="date"
           value={selectedDate}
@@ -49,13 +49,13 @@ const AvailableSchedules: React.FC = () => {
 
       {/* Available Slots */}
       {availableSlots && availableSlots.length === 0 ? (
-        <div>No available slots on this date.</div>
+        <div>Não existe disponibilidades nesse dia.</div>
       ) : (
         <ul className="space-y-2">
           {availableSlots?.map((slot, index) => (
             <li key={index} className="border p-4 rounded">
               <div>
-                <strong>Time Slot:</strong>{' '}
+                <strong>Disponibilidade:</strong>{' '}
                 {format(new Date(slot.start), 'HH:mm')} -{' '}
                 {format(new Date(slot.end), 'HH:mm')}
               </div>

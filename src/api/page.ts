@@ -48,6 +48,7 @@ export type GetPage = Page & {
   uid_chat: string;
   city: string;
   state: string;
+  scheduling_system: string;
   ratings: {
     total: number;
     average: number;

@@ -6,13 +6,13 @@ import { createAvailabilityRule } from '@/api/schedule';
 import { AvailabilityRule } from './types/availabilityRule';
 
 const daysOfWeekMap = [
-  { label: 'Sunday', value: 0 },
-  { label: 'Monday', value: 1 },
-  { label: 'Tuesday', value: 2 },
-  { label: 'Wednesday', value: 3 },
-  { label: 'Thursday', value: 4 },
-  { label: 'Friday', value: 5 },
-  { label: 'Saturday', value: 6 },
+  { label: 'Domingo', value: 0 },
+  { label: 'Segunda', value: 1 },
+  { label: 'Terça', value: 2 },
+  { label: 'Quarta', value: 3 },
+  { label: 'Quinta', value: 4 },
+  { label: 'Sexta', value: 5 },
+  { label: 'Sábado', value: 6 },
 ];
 
 const AvailabilitySettings: React.FC = () => {
