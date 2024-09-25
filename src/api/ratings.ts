@@ -2,6 +2,7 @@ import { api } from ".";
 
 type Invite = {
   id: string;
+  requested_by: string;
 }
 
 type CreateInvite = {
@@ -62,6 +63,7 @@ export const deleteInvite = async (r: Invite): Promise<Rating | string> => {
   const res = await api.delete('ratings/delete', {
     params: {
       id: r.id,
+      requested_by: r.requested_by,
     },
   });
   return res.data;

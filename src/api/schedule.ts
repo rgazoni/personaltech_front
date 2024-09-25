@@ -28,8 +28,8 @@ export const fetchBookings = async (personal_id: string): Promise<Booking[]> => 
   return response.data;
 }
 
-export const deleteBooking = async (booking_id: string): Promise<Booking[]> => {
-  const response = await api.delete(`/schedule/bookings/${booking_id}`)
+export const deleteBooking = async ({ booking_id, requested_by }: { booking_id: string, requested_by: string }): Promise<Booking[]> => {
+  const response = await api.delete(`/schedule/bookings?booking_id=${booking_id}&requested_by=${requested_by}`)
   return response.data;
 }
 

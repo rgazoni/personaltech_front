@@ -37,7 +37,10 @@ const BookedClasses: React.FC = () => {
     navigate('/message?id=' + booking.trainee.uid_chat)
   }
   const handleCancel = (booking: Booking) => {
-    mutateDeleteBooking.mutate(booking.id);
+    mutateDeleteBooking.mutate({
+      booking_id: booking.id,
+      requested_by: 'personal'
+    });
   }
 
   return (

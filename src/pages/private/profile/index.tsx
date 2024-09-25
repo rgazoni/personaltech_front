@@ -198,7 +198,10 @@ const Schedule = () => {
   });
 
   const handleDelete = (id: string) => {
-    mutateDeleteSchedule.mutate(id)
+    mutateDeleteSchedule.mutate({
+      booking_id: id,
+      requested_by: 'trainee',
+    });
   }
   const handleChat = (id: string) => {
     navigate('/message?id=' + id)
@@ -307,6 +310,7 @@ const Invites = () => {
   const handleDelete = (rating_id: string) => {
     mutateDeleteInvite.mutate({
       id: rating_id,
+      requested_by: 'trainee',
     });
     setTraineeReqs((prevReqs) => prevReqs.filter((r) => r.rating_id !== rating_id));
   };

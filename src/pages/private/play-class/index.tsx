@@ -332,7 +332,8 @@ export const PlayClass = () => {
                       className="cursor-pointer text-muted-foreground"
                       onClick={() => {
                         mutateDeleteInvite.mutate({
-                          class_id: req.class_id
+                          class_id: req.class_id,
+                          requested_by: 'personal',
                         });
                       }}
                     />

@@ -369,6 +369,7 @@ export const PersonalRatingPage = () => {
                       onClick={() => {
                         mutateDeleteInvite.mutate({
                           id: req.rating_id,
+                          requested_by: 'personal',
                         });
                       }}
                     />

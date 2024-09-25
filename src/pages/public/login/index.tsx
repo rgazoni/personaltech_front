@@ -7,12 +7,8 @@ import useAppStore, { Client } from '@/store';
 import { useNavigate } from 'react-router-dom';
 import { loginChat } from '@/pages/private/message';
 import React from 'react';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast.hook';
 
 export const Login = () => {
   const updateUser = useAppStore((state) => state.updateUser);
@@ -20,16 +16,21 @@ export const Login = () => {
   const updateClient = useAppStore((state) => state.updateClient);
   const navigate = useNavigate();
   const [loader, setLoader] = React.useState(false);
+  const { notify } = useToast();
 
   const mutation = useMutation({
-    mutationFn: (formData: { email: string, password: string, type: "trainee" | "personal" }) => login(formData.email, formData.password, formData.type),
+    mutationFn: (formData: {
+      email: string;
+      password: string;
+      type: string;
+    }) => login(formData.email, formData.password, formData.type),
     mutationKey: ['login'],
     onSuccess: async (data) => {
       if (data.role === 'trainee') {
         updateClient(data as Client);
         await loginChat((data as Client).uid_chat);
         navigate('/search');
-        return
+        return;
       }
       // Ensure data is of type LoginResponse before accessing properties
       if ('user' in data && 'page' in data) {
@@ -43,16 +44,21 @@ export const Login = () => {
     },
     onError: (error) => {
       setLoader(false);
+      notify('error', 'Login ou senha incorretos');
       console.error(error);
-    }
+    },
   });
 
   return (
     <Modal>
-      <h1 className="md:lg:font-bold md:lg:text-3xl md:lg:text-secondary hidden md:lg:block">Login</h1>
-      <p className="md:lg:text-muted md:lg:text-start hidden md:lg:block mb-5 pt-2">Insira seu e-mail e senha</p>
+      <h1 className="hidden md:lg:text-secondary md:lg:text-3xl md:lg:font-bold md:lg:block">
+        Login
+      </h1>
+      <p className="mb-5 hidden pt-2 md:lg:text-start md:lg:text-muted md:lg:block">
+        Insira seu e-mail e senha
+      </p>
       <Tabs defaultValue="personal">
-        <TabsList className="grid w-full grid-cols-2 mb-5 bg-primary text-white">
+        <TabsList className="mb-5 grid w-full grid-cols-2 bg-primary text-white">
           <TabsTrigger value="personal">Treinador</TabsTrigger>
           <TabsTrigger value="trainee">Usuário</TabsTrigger>
         </TabsList>
@@ -64,19 +70,35 @@ export const Login = () => {
               const formValues = {
                 email: formData.get('email') as string,
                 password: formData.get('password') as string,
-                type: "personal",
+                type: 'personal',
               };
               mutation.mutate(formValues);
             }}
           >
-            <Input type="email" name="email" placeholder="E-mail" className="mt-6 py-6" />
-            <Input type="password" name="password" placeholder="Password" className="mt-6 py-6" />
-            <div className="w-full flex flex-col">
-              <Button className="mt-10 py-6 mx-auto w-4/6 rounded-full" type="submit" onClick={() => setLoader(true)}>
+            <Input
+              type="email"
+              name="email"
+              placeholder="E-mail"
+              className="mt-6 py-6"
+            />
+            <Input
+              type="password"
+              name="password"
+              placeholder="Password"
+              className="mt-6 py-6"
+            />
+            <div className="flex w-full flex-col">
+              <Button
+                className="mx-auto mt-10 w-4/6 rounded-full py-6"
+                type="submit"
+                onClick={() => setLoader(true)}
+              >
                 {loader ? 'Carregando...' : 'Log in'}
               </Button>
-              <Button className="mt-1 py-2 mx-auto" variant="link">
-                <span className="text-blue-400 underline font-light">Esqueci minha senha</span>
+              <Button className="mx-auto mt-1 py-2" variant="link">
+                <span className="font-light text-blue-400 underline">
+                  Esqueci minha senha
+                </span>
               </Button>
             </div>
           </form>
@@ -94,14 +116,30 @@ export const Login = () => {
               mutation.mutate(formValues);
             }}
           >
-            <Input type="email" name="email" placeholder="E-mail" className="mt-6 py-6" />
-            <Input type="password" name="password" placeholder="Password" className="mt-6 py-6" />
-            <div className="w-full flex flex-col">
-              <Button className="mt-10 py-6 mx-auto w-4/6 rounded-full" type="submit" onClick={() => setLoader(true)}>
+            <Input
+              type="email"
+              name="email"
+              placeholder="E-mail"
+              className="mt-6 py-6"
+            />
+            <Input
+              type="password"
+              name="password"
+              placeholder="Password"
+              className="mt-6 py-6"
+            />
+            <div className="flex w-full flex-col">
+              <Button
+                className="mx-auto mt-10 w-4/6 rounded-full py-6"
+                type="submit"
+                onClick={() => setLoader(true)}
+              >
                 {loader ? 'Carregando...' : 'Log in'}
               </Button>
-              <Button className="mt-1 py-2 mx-auto" variant="link">
-                <span className="text-blue-400 underline font-light">Esqueci minha senha</span>
+              <Button className="mx-auto mt-1 py-2" variant="link">
+                <span className="font-light text-blue-400 underline">
+                  Esqueci minha senha
+                </span>
               </Button>
             </div>
           </form>
@@ -109,5 +147,4 @@ export const Login = () => {
       </Tabs>
     </Modal>
   );
-}
-
+};

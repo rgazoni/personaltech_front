@@ -46,7 +46,7 @@ export const createTrainee = async (newClient: CreateClient): Promise<Client> =>
   return res.data;
 }
 
-export const login = async (email: string, password: string, type: 'personal' | 'trainee'): Promise<LoginResponse | Client> => {
+export const login = async (email: string, password: string, type: string): Promise<LoginResponse | Client> => {
   const res = await api.post('auth/login', { email, password, type });
   const user = res.data;
   if (user.role === 'trainee') {

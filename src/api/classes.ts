@@ -58,10 +58,11 @@ export const getTraineeResponses = async (id: string, status: string): Promise<a
   return res.data;
 }
 
-export const deleteClass = async (r: { class_id: string }): Promise<Classes | string> => {
+export const deleteClass = async (r: { class_id: string, requested_by: string }): Promise<Classes | string> => {
   const res = await api.delete('classes/delete', {
     params: {
       class_id: r.class_id,
+      requested_by: r.requested_by,
     },
   });
   return res.data;
