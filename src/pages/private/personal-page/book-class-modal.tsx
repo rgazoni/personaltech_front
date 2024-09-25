@@ -99,20 +99,23 @@ const BookClassModal: React.FC<BookClassModalProps> = ({ personal_id, isOpen, on
           <div>Não há horários disponíveis nesta data.</div>
         ) : (
           <ul className="space-y-2 max-h-60 overflow-y-auto">
-            {availableSlots?.map((slot: { start: string; end: string }, index: number) => (
-              <li
-                key={index}
-                className={`border p-4 rounded cursor-pointer ${selectedSlot?.start === slot.start ? 'bg-blue-100' : ''
-                  }`}
-                onClick={() => handleSlotSelect(slot)}
-              >
-                <div>
-                  <strong>Horário:</strong>{' '}
-                  {format(new Date(slot.start), 'HH:mm')} -{' '}
-                  {format(new Date(slot.end), 'HH:mm')}
-                </div>
-              </li>
-            ))}
+            {availableSlots?.map((slot: { start: string; end: string }, index: number) => {
+              if (new Date(slot.start) < new Date()) return null;
+              return (
+                <li
+                  key={index}
+                  className={`border p-4 rounded cursor-pointer ${selectedSlot?.start === slot.start ? 'bg-blue-100' : ''
+                    }`}
+                  onClick={() => handleSlotSelect(slot)}
+                >
+                  <div>
+                    <strong>Horário:</strong>{' '}
+                    {format(new Date(slot.start), 'HH:mm')} -{' '}
+                    {format(new Date(slot.end), 'HH:mm')}
+                  </div>
+                </li>
+              )
+            })}
           </ul>
         )}
 

@@ -217,53 +217,59 @@ const Schedule = () => {
         </div>
       ) : isSuccess && data.length > 0 ? (
         // Show trainee requests if available
-        data.map((req) => (
-          <CardContent key={req.booking.id} className="space-y-2">
-            <div className="flex w-72 flex-col gap-4 rounded-lg border bg-secondary-foreground p-5">
-              <div className="flex w-full">
-                <div className="flex w-full items-center gap-2">
-                  <AvatarProfileImg
-                    src={req.professional.avatar}
-                    alt={req.professional.page_name}
-                    size={64}
-                  />
+        data.map((req) => {
+          const date = new Date(req.booking.startDatetime);
+          if (date < new Date()) {
+            return;
+          }
+          return (
+            <CardContent key={req.booking.id} className="space-y-2">
+              <div className="flex w-64 flex-col gap-4 rounded-lg border bg-secondary-foreground p-5">
+                <div className="flex w-full">
+                  <div className="flex w-full items-center gap-2">
+                    <AvatarProfileImg
+                      src={req.professional.avatar}
+                      alt={req.professional.page_name}
+                      size={64}
+                    />
 
 
-                  <div>
-                    <h5 className="text-xs text-secondary">{req.professional.page_name}</h5>
-                    <p className="text-xs text-muted">Data: {format(new Date(req.booking.startDatetime), 'dd/MM/yyyy')}</p>
-                    <p className="text-xs text-muted">
-                      Horário:{' '}
-                      {format(new Date(req.booking.startDatetime), 'HH:mm')} -{' '}
-                      {format(new Date(req.booking.endDatetime), 'HH:mm')}
-                    </p>
+                    <div>
+                      <h5 className="text-xs text-secondary">{req.professional.page_name}</h5>
+                      <p className="text-xs text-muted">Data: {format(new Date(req.booking.startDatetime), 'dd/MM/yyyy')}</p>
+                      <p className="text-xs text-muted">
+                        Horário:{' '}
+                        {format(new Date(req.booking.startDatetime), 'HH:mm')} -{' '}
+                        {format(new Date(req.booking.endDatetime), 'HH:mm')}
+                      </p>
+                    </div>
                   </div>
+                  <ExternalLink
+                    size={14}
+                    className="cursor-pointer text-secondary"
+                    onClick={() => navigate('/u/' + req.professional.url)}
+                  />
                 </div>
-                <ExternalLink
-                  size={14}
-                  className="cursor-pointer text-secondary"
-                  onClick={() => navigate('/u/' + req.professional.url)}
-                />
+                <div className="flex w-full justify-end gap-3">
+                  <Button
+                    variant="ghost"
+                    className="cursor-pointer text-xs"
+                    onClick={() => handleDelete(req.booking.id)}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="default"
+                    className="cursor-pointer px-8 text-xs"
+                    onClick={() => handleChat(req.booking.personal.uid_chat)}
+                  >
+                    Conversar
+                  </Button>
+                </div>
               </div>
-              <div className="flex w-full justify-end gap-3">
-                <Button
-                  variant="ghost"
-                  className="cursor-pointer text-xs"
-                  onClick={() => handleDelete(req.booking.id)}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  variant="default"
-                  className="cursor-pointer px-8 text-xs"
-                  onClick={() => handleChat(req.booking.personal.uid_chat)}
-                >
-                  Conversar
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        ))
+            </CardContent>
+          )
+        })
       ) : (
         // Show message if there are no invites
         <div className="col-span-3">

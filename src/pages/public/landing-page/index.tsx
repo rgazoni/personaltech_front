@@ -19,7 +19,7 @@ export const LandingPage = () => {
           <h2
             className="font-bold text-5xl lg:text-6xl text-secondary w-full"
           >
-            Conectamos quem quer treinar com os melhores treinadores
+            Conectamos você com os melhores treinadores
           </h2>
           <CurvedLine />
           <h3 className="text-base lg:w-72 text-muted leading-relaxed">

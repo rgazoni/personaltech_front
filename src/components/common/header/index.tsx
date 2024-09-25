@@ -13,7 +13,6 @@ import {
   ChevronDown,
   CirclePlay,
   Eye,
-  Frown,
   LogOut,
   MessageCircle,
   Settings,
@@ -29,9 +28,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getPendingsReqs, getTraineeReqs } from '@/api/ratings';
-import md5 from 'md5';
 import { getUnreadMessageCount, logoutChat } from '@/pages/private/message';
+import { getNotifications } from '@/api/notifications';
+import { Notifications } from './notifications';
 
 const nav_bar = (color: string) => {
   const navigate = useNavigate();
@@ -72,8 +71,8 @@ const logged_nav_bar_client = (client: Client, color: string) => {
   const navigate = useNavigate();
   const updateClient = useAppStore((state) => state.updateClient);
   const [showDropdown, setShowDropdown] = React.useState(false);
-  const [md5F, setMd5F] = React.useState('');
   const [counterMessage, setCounterMessage] = React.useState(0);
+  const [hasNotifications, setHasNotifications] = React.useState(false);
 
   const handleSignOut = async () => {
     navigate('/');
@@ -85,26 +84,6 @@ const logged_nav_bar_client = (client: Client, color: string) => {
   const handleMessages = () => {
     navigate('/message');
   };
-
-  const { data, isSuccess } = useQuery({
-    queryKey: [],
-    queryFn: () => getTraineeReqs(client.id),
-    refetchOnWindowFocus: true,
-  });
-
-  useEffect(() => {
-    if (isSuccess && data?.length > 0) {
-      const newMd5 = md5(JSON.stringify(data));
-      setMd5F(newMd5);
-      if (newMd5 !== client.md5Not) {
-        updateClient({
-          ...client,
-          sawNot: false,
-          md5Not: md5F,
-        });
-      }
-    }
-  }, [isSuccess, data]);
 
   useEffect(() => {
     const fetchUnreadMessages = async () => {
@@ -126,6 +105,18 @@ const logged_nav_bar_client = (client: Client, color: string) => {
 
   }, []);
 
+  const { data: notifications, isSuccess: successNotifications } = useQuery({
+    queryKey: ['notifications', client.id],
+    queryFn: () => getNotifications(client.id),
+  });
+
+  useEffect(() => {
+    if (successNotifications && notifications?.length > 0) {
+      const unreaden_notifications = notifications.filter((n) => !n.read);
+      setHasNotifications(unreaden_notifications.length > 0);
+    }
+  }, [successNotifications, notifications]);
+
   return (
     <div
       className={`hidden gap-7 pl-6 md:flex md:items-center md:justify-center lg:flex ${color}`}
@@ -146,49 +137,18 @@ const logged_nav_bar_client = (client: Client, color: string) => {
 
         </div>
 
-        <div className="relative">
+        <div className="relative" onClick={() => setHasNotifications(false)}>
           <div
             className="relative cursor-pointer"
-            onClick={() => {
-              setShowDropdown(!showDropdown);
-              if (!client.sawNot) {
-                updateClient({
-                  ...client,
-                  sawNot: true,
-                  md5Not: md5F,
-                });
-              }
-            }}
+            onClick={() => setShowDropdown(!showDropdown)}
           >
-            {isSuccess && data?.length > 0 && !client.sawNot && (
-              <div className="absolute -right-2 -top-2 flex h-3 w-3 items-center justify-center rounded-full bg-primary">
-                <span className="text-[8px] font-bold">{data.length}</span>
-              </div>
+            {successNotifications && notifications?.length > 0 && hasNotifications && (
+              <div className="absolute -right-1 -top-1 flex h-2 w-2 items-center justify-center rounded-full bg-primary"></div>
             )}
             <Bell size={20} className="cursor-pointer" />
           </div>
-          {showDropdown && (
-            <div className="absolute -right-4 top-6 z-10 mt-1 w-60 rounded-lg border bg-white shadow-lg">
-              <div
-                className="cursor-pointer rounded-md bg-background shadow-md hover:bg-gray-100"
-              >
-                <div className="flex flex-col gap-2 p-3">
-                  {data?.length! > 0 && (
-                    <p className="text-sm text-secondary"
-                      onClick={() => navigate('/profile?tab=invites')}
-                    >
-                      Você tem {data?.length} novas solicitações de avaliação pendentes
-                    </p>
-                  )}
-                  {!data || data.length === 0 && (
-                    <div className='flex gap-1' >
-                      <Frown size={16} className='text-muted' />
-                      <p className="text-xs text-muted">Você não tem novas notificações.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+          {successNotifications && notifications?.length > 0 && (
+            <Notifications data={notifications!} showDropdown={showDropdown} />
           )}
         </div>
       </div>
@@ -231,7 +191,7 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
   const updatePage = useAppStore((state) => state.updatePage);
   const [counterMessage, setCounterMessage] = React.useState(0);
   const [showDropdown, setShowDropdown] = React.useState(false);
-  const [md5F, setMd5F] = React.useState('');
+  const [hasNotifications, setHasNotifications] = React.useState(false);
 
   const handleSignOut = async () => {
     updateUser(initialUser);
@@ -265,26 +225,17 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
     return () => clearInterval(intervalId); // Clean up on unmount
   }, []);
 
-
-  const { data, isSuccess } = useQuery({
-    queryKey: [],
-    queryFn: () => getPendingsReqs(user.id),
-    refetchOnWindowFocus: true,
+  const { data: notifications, isSuccess: successNotifications } = useQuery({
+    queryKey: ['notifications', user.id],
+    queryFn: () => getNotifications(user.id),
   });
 
   useEffect(() => {
-    if (isSuccess && data?.length > 0) {
-      const newMd5 = md5(JSON.stringify(data));
-      setMd5F(newMd5);
-      if (newMd5 !== user.md5Not) {
-        updateUser({
-          ...user,
-          sawNot: false,
-          md5Not: md5F,
-        });
-      }
+    if (successNotifications && notifications?.length > 0) {
+      const unreaden_notifications = notifications.filter((n) => !n.read);
+      setHasNotifications(unreaden_notifications.length > 0);
     }
-  }, [isSuccess, data]);
+  }, [successNotifications, notifications]);
 
   const handlePlayClass = () => navigate('/play');
 
@@ -311,49 +262,18 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
           </div>
         </>
       )}
-      <div className="relative">
+      <div className="relative" onClick={() => setHasNotifications(false)}>
         <div
           className="relative cursor-pointer"
-          onClick={() => {
-            setShowDropdown(!showDropdown);
-            if (!user.sawNot) {
-              updateUser({
-                ...user,
-                sawNot: true,
-                md5Not: md5F,
-              });
-            }
-          }}
+          onClick={() => setShowDropdown(!showDropdown)}
         >
-          {isSuccess && data?.length > 0 && !user.sawNot && (
-            <div className="absolute -right-2 -top-2 flex h-3 w-3 items-center justify-center rounded-full bg-primary">
-              <span className="text-[8px] font-bold">{data.length}</span>
-            </div>
+          {successNotifications && notifications?.length > 0 && hasNotifications && (
+            <div className="absolute -right-1 -top-1 flex h-2 w-2 items-center justify-center rounded-full bg-primary"></div>
           )}
           <Bell size={20} className="cursor-pointer" />
         </div>
-        {showDropdown && (
-          <div className="absolute -right-4 top-6 z-10 mt-1 w-60 rounded-lg border bg-white shadow-lg">
-            <div
-              className="cursor-pointer rounded-md bg-background shadow-md hover:bg-gray-100"
-            >
-              <div className="flex flex-col gap-2 p-3">
-                {data?.length! > 0 && (
-                  <p className="text-sm text-secondary"
-                    onClick={() => navigate('/page/edit/rating')}
-                  >
-                    Você tem {data?.length} novas solicitações de avaliação.
-                  </p>
-                )}
-                {!data || data.length === 0 && (
-                  <div className='flex gap-1' >
-                    <Frown size={16} className='text-muted' />
-                    <p className="text-xs text-muted">Você não tem novas notificações.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+        {successNotifications && notifications?.length > 0 && (
+          <Notifications data={notifications!} showDropdown={showDropdown} />
         )}
       </div>
 

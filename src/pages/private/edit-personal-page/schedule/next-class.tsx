@@ -94,15 +94,15 @@ const NextClass: React.FC = () => {
     <div className="p-4 border rounded mb-6">
       <h2 className="text-xl font-semibold mb-2">Sua próxima aula</h2>
       <p>
-        Sua próxima aula é {timeRemaining} em{' '}
+        Sua próxima aula será dentro de {timeRemaining}. <br />No dia{' '}
         {new Date(nextClass.startDatetime).toLocaleString('pt-BR', {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',
           hour: '2-digit',
           minute: '2-digit',
-        })}
-        .
+        }).replace(',', ' às')}
+        {' '} horas.
       </p>
       <Button onClick={handleNavigateToPlayClass} className="mt-4">
         Ir para a aula
