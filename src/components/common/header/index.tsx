@@ -262,7 +262,8 @@ const logged_nav_bar_personal = (page: Page, user: User, color: string) => {
           </div>
         </>
       )}
-      <div className="relative" onClick={() => setHasNotifications(false)}>
+      <div className="relative" onClick={() => setHasNotifications(false)}
+      >
         <div
           className="relative cursor-pointer"
           onClick={() => setShowDropdown(!showDropdown)}

@@ -35,6 +35,8 @@ import {
 import { Visitor, postVisitor } from '@/api/visitors';
 import { getVisitorId } from '@/lib/visitors';
 import BookClassModal from './book-class-modal';
+import { DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog } from '@radix-ui/react-dialog';
 
 const CommentsSection = ({ data }: { data: RatingInfo }) => {
   const date = new Date(data.userResponseAt);
@@ -311,9 +313,31 @@ export const PersonalPage = () => {
                     {isLoadingAccepted ? (
                       <></>
                     ) : acceptedData && acceptedData.length !== 0 ? (
-                      acceptedData.map((rate: RatingInfo) => (
-                        <CommentsSection key={rate.trainee_id} data={rate} />
-                      ))
+                      <>
+                        {acceptedData.slice(0, 2).map((rate: RatingInfo) => (
+                          <CommentsSection key={rate.trainee_id} data={rate} />
+                        ))}
+                        <Dialog>
+                          <DialogTrigger className="flex justify-center">
+                            <Button variant="link">
+                              Ver todos comentários
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className='pb-0 mb-0'>
+                            <DialogHeader>
+                              <DialogTitle>Comentários</DialogTitle>
+                            </DialogHeader>
+                            <DialogDescription>
+                              Comentários de alunos que já treinaram com <strong>{data!.page_name}</strong>.
+                            </DialogDescription>
+                            <div className="flex flex-col gap-6 pt-8 h-[30rem] overflow-y-auto pb-12">
+                              {acceptedData.map((rate: RatingInfo) => (
+                                <CommentsSection key={rate.trainee_id} data={rate} />
+                              ))}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      </>
                     ) : (
                       <div className="text-center text-sm font-light text-muted">
                         Nenhum comentário ainda
@@ -328,7 +352,7 @@ export const PersonalPage = () => {
                     <div className="mt-14 flex flex-col gap-5 w-full">
                       <div className='flex w-full justify-between items-start'>
                         <div className='flex w-full gap-5 flex-col'>
-                          <h1 className={`text-nowrap text-6xl font-bold ${color}`}>
+                          <h1 className={`text-nowrap text-6xl font-bold ${color} `}>
                             {data!.page_name}
                           </h1>
                           <div className="flex flex-wrap gap-2">
@@ -515,7 +539,8 @@ export const PersonalPage = () => {
             </div>
           )}
         </Layout>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };

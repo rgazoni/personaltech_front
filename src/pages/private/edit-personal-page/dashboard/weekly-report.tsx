@@ -7,9 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { addWeeks, startOfISOWeek } from "date-fns"
 
 type WeeklyReportProps = {
-  data: { date: string; views: number }[]
+  data: { week: string; views: number }[]
 }
 
 export const WeeklyReport = (
@@ -22,6 +23,24 @@ export const WeeklyReport = (
   const lastWeekViews = data[data.length - 2].views
   const percentageChange = ((currentWeekViews - lastWeekViews) / lastWeekViews) * 100
   const isIncrease = percentageChange > 0
+
+  const getISOWeekRange = (year: number, weekNumber: number) => {
+    const firstDayOfYear = new Date(year, 0, 4); // ISO week 1 contains Jan 4th
+    const startOfFirstWeek = startOfISOWeek(firstDayOfYear);
+    const desiredWeek = addWeeks(startOfFirstWeek, weekNumber - 1);
+    const endOfDesiredWeek = addWeeks(desiredWeek, 1);
+
+    return {
+      start: desiredWeek,
+      end: endOfDesiredWeek,
+    };
+  }
+
+  const handleWeek = (week: string) => {
+    const weekNumber = parseInt(week);
+    const { start, end } = getISOWeekRange(2024, weekNumber);
+    return `${start.getDate()}/${start.getMonth() + 1} - ${end.getDate()}/${end.getMonth() + 1}`;
+  }
 
   return (
     <Card className="w-full h-fit">
@@ -52,7 +71,7 @@ export const WeeklyReport = (
                   <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1} />
                 </linearGradient>
               </defs>
-              <XAxis dataKey="date" hide />
+              <XAxis dataKey="week" hide />
               <YAxis hide />
               <Tooltip
                 content={({ active, payload }) => {
@@ -70,10 +89,10 @@ export const WeeklyReport = (
                           </div>
                           <div className="flex flex-col">
                             <span className="text-[0.70rem] uppercase text-muted-foreground">
-                              Data
+                              Semana
                             </span>
                             <span className="font-bold text-muted-foreground">
-                              {payload[0].payload.date}
+                              {handleWeek(payload[0].payload.week)}
                             </span>
                           </div>
                         </div>

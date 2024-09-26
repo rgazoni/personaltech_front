@@ -4,12 +4,6 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { fetchTrainees } from '@/api/user';
 import { Button } from '@/components/ui/button';
 import { Star, Trash, X } from 'lucide-react';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from '@/components/ui/accordion';
 import useAppStore, { Client } from '@/store';
 import { AvatarProfileImg } from '@/components/common/avatar-profile-img';
 import { useToast } from '@/hooks/use-toast.hook';
@@ -259,9 +253,11 @@ export const PersonalRatingPage = () => {
   });
 
   const handleSortChange = () => {
+    notify('info', 'A ordenação dos comentários foi atualizada! 🔄');
     updatePageField('comments_sort', sortType);
     mutateSort.mutate({ personal_id: user.id, comments_sort: sortType });
   }
+
 
   return (
     <>
@@ -379,60 +375,57 @@ export const PersonalRatingPage = () => {
             </div>
           )}
 
-          <Accordion type="multiple" className="flex flex-col gap-10">
-            <AccordionItem value="item-2">
-              <AccordionTrigger>
-                <h3 className="text-xl font-bold text-secondary">
-                  {isLoadingAccepted || accData?.length === 0
-                    ? 'Avaliações Aceitas'
-                    : `Avaliações Aceitas (${accData?.length})`}
-                </h3>
-              </AccordionTrigger>
-              <AccordionContent>
-                {isLoadingAccepted ? (
-                  <Loader />
-                ) : accData && accData.length > 0 ? (
-                  <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-10">
 
-                    <div className='flex flex-col gap-4 pt-4 pb-6 border px-6 rounded-lg'>
-                      <p className='font-bold'>Como você deseja ordenar seus comentários?</p>
-                      <RadioGroup defaultValue={sortType} className='flex gap-5'
-                        onValueChange={(value) => setSortType(value)}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="time_desc" id="r1" />
-                          <Label htmlFor="r1">Ordem Cronológica</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="rating_desc" id="r2" />
-                          <Label htmlFor="r2">Estrelas Decrescente</Label>
-                        </div>
-                      </RadioGroup>
-                      <Button variant='outline' className='w-24 text-xs' size='sm'
-                        onClick={handleSortChange}
-                      >Aplicar</Button>
-                    </div>
+            <h3 className="text-xl font-bold text-secondary">
+              {isLoadingAccepted || accData?.length === 0
+                ? 'Avaliações Aceitas'
+                : `Avaliações Aceitas (${accData?.length})`}
+            </h3>
+            <div>
+              {isLoadingAccepted ? (
+                <Loader />
+              ) : accData && accData.length > 0 ? (
+                <div className="flex flex-col gap-5">
 
-                    {accData.map((rating) => (
-                      <RatingCard
-                        status="accepted"
-                        key={rating.trainee_id}
-                        data={rating}
-                        onSubmit={handledecision}
-                        onDelete={handleDelete}
-                      />
-                    ))}
+                  <div className='flex flex-col gap-4 pt-4 pb-6 border px-6 rounded-lg'>
+                    <p className='font-bold'>Como você deseja ordenar seus comentários?</p>
+                    <RadioGroup defaultValue={sortType} className='flex gap-5'
+                      onValueChange={(value) => setSortType(value)}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="time_desc" id="r1" />
+                        <Label htmlFor="r1">Ordem Cronológica</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="rating_desc" id="r2" />
+                        <Label htmlFor="r2">Estrelas Decrescente</Label>
+                      </div>
+                    </RadioGroup>
+                    <Button variant='outline' className='w-24 text-xs' size='sm'
+                      onClick={handleSortChange}
+                    >Aplicar</Button>
                   </div>
-                ) : (
-                  <div className="rounded-xl border py-5">
-                    <p className="text-center text-xs text-muted">
-                      Nenhuma avaliação pendente
-                    </p>
-                  </div>
-                )}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+
+                  {accData.map((rating) => (
+                    <RatingCard
+                      status="accepted"
+                      key={rating.trainee_id}
+                      data={rating}
+                      onSubmit={handledecision}
+                      onDelete={handleDelete}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-xl border py-5">
+                  <p className="text-center text-xs text-muted">
+                    Nenhuma avaliação pendente
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </>

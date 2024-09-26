@@ -79,7 +79,8 @@ export const Notifications = ({
 
   return (
     showDropdown && (
-      <div className="absolute -right-4 top-6 z-10 mt-1 max-h-96 w-60 overflow-y-auto rounded-lg border bg-white shadow-lg">
+      <div className="absolute -right-4 top-6 mt-1 max-h-96 w-60 overflow-y-auto rounded-lg border bg-white shadow-lg"
+      >
         <div className="rounded-md bg-background shadow-md">
           <div className="flex flex-col gap-2 p-3">
             {notifications && notifications.length > 0 ? (
@@ -87,7 +88,7 @@ export const Notifications = ({
                 {notifications.map((notification) => (
                   <div key={notification.id}>
                     <div
-                      className="mb-2 flex cursor-pointer flex-col gap-1 px-2 py-2 hover:rounded-md hover:bg-gray-100"
+                      className="mb-2 flex cursor-pointer flex-col gap-1 px-2 py-2 hover:rounded-md hover:bg-gray-100 text-black"
                       onClick={() => {
                         if (window.location.pathname === notification.url) {
                           window.location.reload();

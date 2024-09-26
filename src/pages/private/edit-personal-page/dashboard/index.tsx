@@ -8,6 +8,7 @@ import useAppStore from "@/store"
 import { useEffect, useState } from "react"
 import { Component } from "./monthly-views"
 import { Hours } from "./hours"
+import { getWeek, parseISO } from "date-fns"
 
 export type Age = {
   "0-18": number;
@@ -20,7 +21,7 @@ export type Age = {
 export const Dashboard = () => {
   const page = useAppStore((state) => state.page)
   const user = useAppStore((state) => state.user)
-  const [weeklyData, setWeeklyData] = useState<{ date: string; views: number }[]
+  const [weeklyData, setWeeklyData] = useState<{ week: string; views: number }[]
     | null>(null)
   const [monthlyData, setMonthlyData] = useState<{ month: string; abrv: string; visitors: number }[]
     | null>([
@@ -113,10 +114,20 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (weekly) {
-      setWeeklyData(weekly.map((item: any) => ({
-        date: item.date.split('T')[0].replace(/-/g, '/'),
-        views: item.views,
-      })))
+      const weeklyAggregation = weekly.reduce((acc: any, item: any) => {
+        // Parse the date string into a Date object
+        const date = parseISO(item.date)
+        // Get the ISO week number
+        const weekNumber = getWeek(date, { weekStartsOn: 1 }) // week starts on Monday
+        // Accumulate views per week
+        if (!acc[weekNumber]) {
+          acc[weekNumber] = { week: weekNumber, views: 0 }
+        }
+        acc[weekNumber].views += item.views
+        return acc
+      }, {})
+      setWeeklyData(Object.values(weeklyAggregation))
+
       setMonthlyData((prev) => {
         return prev!.map((item) => {
           const month = weekly.find((w: any) => w.date.split('-')[1] === item.abrv)
