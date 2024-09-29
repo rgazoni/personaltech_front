@@ -8,7 +8,7 @@ import { User } from '@/store';
 export const PersonalFormPage = ({ data }: { data: User }) => {
   const { state, dispatch } = useEditPersonalContext();
   const info = {
-    backgroundColor: state.background_color || '#272727',
+    backgroundColor: state.background_color || '#AEB7C3',
   };
 
   const handleColorChange = (color: string) => {

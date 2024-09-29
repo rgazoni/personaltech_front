@@ -5,6 +5,7 @@ import { CrefStatusResponse, fetchCrefStatus } from '@/api/cref';
 
 export const CrefVerification = () => {
   const user = useAppStore((state) => state.user);
+  const updateUserField = useAppStore((state) => state.updateUserField);
   const { data, isPending, refetch } = useQuery<CrefStatusResponse>({
     queryKey: ['cref', user.id],
     queryFn: () => fetchCrefStatus({ id: user.id }),
@@ -13,6 +14,7 @@ export const CrefVerification = () => {
       if (data.state.data?.status === 'pending') {
         return 5000; // 5 seconds
       }
+
       // Stop refetching if status is 'valid' or 'invalid'
       return false; // Disables refetch
     },
@@ -22,6 +24,7 @@ export const CrefVerification = () => {
     setTimeout(() => {
       refetch();
     }, 1000);
+    updateUserField('is_cref_verified', data?.status as 'valid' | 'invalid' | 'already_exists');
   }
 
   return (

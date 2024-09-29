@@ -27,11 +27,11 @@ export const PersonalPreviewPage = () => {
 
   const defaultInfo = {
     page_name: 'Nome da página',
-    backgroundColor: '#272727',
+    backgroundColor: '#AEB7C3',
     expertises: ['Especialidades'],
     profession: 'Profissão',
     cref: 'CREF XXXXXX-X/XX',
-    service_value: 'XX,XX',
+    service_value: '000',
   };
 
   const user = useAppStore((state) => state.user);
@@ -69,10 +69,10 @@ export const PersonalPreviewPage = () => {
   return (
     <div className="relative w-full">
       <div
-        className="absolute left-0 top-0 z-0 h-[20rem] w-full rounded-t-md"
+        className="absolute left-0 top-0 -z-50 h-[20rem] w-full rounded-t-md"
         style={{ background: info.backgroundColor }}
       ></div>
-      <div className="relative z-10 flex gap-8 pl-16 pt-16">
+      <div className="relative flex gap-8 pl-16 pt-16">
 
         {/* Left column  */}
         <div className="flex flex-col gap-3">

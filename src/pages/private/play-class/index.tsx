@@ -125,7 +125,7 @@ export const PlayClass = () => {
       setElapsedTime(elapsed);
       setClassStarted(false);
       setStartTime(null);
-      notify('success', 'Aula finalizada! 🛑');
+      notify('success', 'Aula pausada!');
     }
   };
 
@@ -143,6 +143,7 @@ export const PlayClass = () => {
 
 
   const handleFinishClass = (class_id: string) => {
+    notify('info', 'Aula finalizada! 🛑');
     mutateFinishClass.mutate({
       id: class_id,
       status: 'finished',

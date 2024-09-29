@@ -33,7 +33,7 @@ export const SocialMedia = ({ data }: SocialMediaProps) => {
           placeholder='(00) 00000-0000'
           type='tel'
           onBlur={(e) =>
-            dispatch({ type: 'update-whatsapp', payload: { instagram: e.target.value } })
+            dispatch({ type: 'update-whatsapp', payload: { whatsapp: e.target.value } })
           }
         />
       </div>

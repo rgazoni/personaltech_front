@@ -6,10 +6,12 @@ import { Booking, deleteBooking, fetchBookings } from '@/api/schedule';
 import { AvatarProfileImg } from '@/components/common/avatar-profile-img';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast.hook';
 
 const BookedClasses: React.FC = () => {
   const personal = useAppStore((state) => state.user);
   const navigate = useNavigate();
+  const { notify } = useToast();
 
   const { data: bookings, isLoading, isError, refetch } = useQuery({
     queryKey: ['bookings', personal?.id],
@@ -41,6 +43,7 @@ const BookedClasses: React.FC = () => {
       booking_id: booking.id,
       requested_by: 'personal'
     });
+    notify('success', 'Aula cancelada');
   }
 
   return (

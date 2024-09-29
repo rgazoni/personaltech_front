@@ -463,12 +463,14 @@ export const Profile = () => {
   });
 
   const handleAcceptClass = (id: string) => {
+    notify('success', 'Aula aceita com sucesso');
     mutateRespondClass.mutate({
       id,
       status: 'accepted',
     });
   }
   const handleRejectClass = (id: string) => {
+    notify('success', 'Aula rejeitada com sucesso');
     mutateRespondClass.mutate({
       id,
       status: 'rejected',

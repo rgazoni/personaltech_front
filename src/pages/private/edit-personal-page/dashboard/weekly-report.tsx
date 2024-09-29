@@ -19,8 +19,8 @@ export const WeeklyReport = (
   if (!data) {
     return null
   }
-  const currentWeekViews = data[data.length - 1].views
-  const lastWeekViews = data[data.length - 2].views
+  const currentWeekViews = data[data.length - 1]?.views || 0
+  const lastWeekViews = data[data.length - 2]?.views || 0
   const percentageChange = ((currentWeekViews - lastWeekViews) / lastWeekViews) * 100
   const isIncrease = percentageChange > 0
 

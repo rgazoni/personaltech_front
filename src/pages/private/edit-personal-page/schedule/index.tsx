@@ -11,6 +11,7 @@ import useAppStore from '@/store';
 
 const Schedule: React.FC = () => {
   const personal = useAppStore((state) => state.user);
+  const userUpdateField = useAppStore((state) => state.updateUserField);
   const [useSchedule, setUseSchedule] = React.useState(personal.scheduling_system);
 
   const mutateSchedule = useMutation({
@@ -19,6 +20,7 @@ const Schedule: React.FC = () => {
   });
 
   const handleScheduleSelection = () => {
+    userUpdateField('scheduling_system', useSchedule);
     mutateSchedule.mutate();
   }
 
@@ -26,6 +28,7 @@ const Schedule: React.FC = () => {
     if (useSchedule) {
       handleScheduleSelection();
     }
+    console.log('useSchedule', useSchedule);
   }, [useSchedule]);
 
 

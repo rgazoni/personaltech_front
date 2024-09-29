@@ -9,6 +9,7 @@ import { useEffect, useState } from "react"
 import { Component } from "./monthly-views"
 import { Hours } from "./hours"
 import { getWeek, parseISO } from "date-fns"
+import { Loader } from "lucide-react"
 
 export type Age = {
   "0-18": number;
@@ -22,7 +23,7 @@ export const Dashboard = () => {
   const page = useAppStore((state) => state.page)
   const user = useAppStore((state) => state.user)
   const [weeklyData, setWeeklyData] = useState<{ week: string; views: number }[]
-    | null>(null)
+    | null>([])
   const [monthlyData, setMonthlyData] = useState<{ month: string; abrv: string; visitors: number }[]
     | null>([
       {
@@ -141,29 +142,38 @@ export const Dashboard = () => {
   }, [weekly])
 
   return (
-    weeklyPending || agePending || regionsPending || genderPending || elapsedPending ? <div>Loading...</div> : weeklyError || ageError || regionsError || genderError || elapsedError ? <div>Error</div> :
-      <div className="flex flex-col w-full gap-10">
-        <h1 className="text-3xl font-bold text-secondary">Relatório Semanal</h1>
-        <WeeklyReport data={weeklyData!} />
-        <div className="flex flex-col gap-6">
-          <div className="grid grid-cols-2 gap-4">
-            <Component data={monthlyData!} />
-            <Hours data={elapsed!} />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-secondary">Análise de usuários</h1>
-            <span className="text-sm text-muted-foreground">Análise dos usuários que entraram no seu perfil e possuem uma conta na plataforma</span>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <ViewsType data={gender!} />
-            <AgeChart data={age!} />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-6">
-          <h1 className="text-xl font-bold text-secondary">Disposição geográfica</h1>
-          <TableRegions data={regions!} />
-        </div>
+    weeklyPending || agePending || regionsPending || genderPending || elapsedPending ?
+      <div className="w-full text-center flex flex-col justify-center items-center gap-2">
+        <Loader size={32} className="text-muted animate-spin" />
+        <h1 className="text-muted">Carregando dados</h1>
       </div>
+      : weeklyError || ageError || regionsError || genderError || elapsedError ?
+        <div className="w-full text-center flex justify-center items-center">
+          <h1 className="text-muted">Você ainda não possui nenhum dado disponível</h1>
+        </div>
+        :
+        <div className="flex flex-col w-full gap-10">
+          <h1 className="text-3xl font-bold text-secondary">Relatório Semanal</h1>
+          <WeeklyReport data={weeklyData!} />
+          <div className="flex flex-col gap-6">
+            <div className="grid grid-cols-2 gap-4">
+              <Component data={monthlyData!} />
+              <Hours data={elapsed!} />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-secondary">Análise de usuários</h1>
+              <span className="text-sm text-muted-foreground">Análise dos usuários que entraram no seu perfil e possuem uma conta na plataforma</span>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <ViewsType data={gender!} />
+              <AgeChart data={age!} />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <h1 className="text-xl font-bold text-secondary">Disposição geográfica</h1>
+            <TableRegions data={regions!} />
+          </div>
+        </div>
   )
 }

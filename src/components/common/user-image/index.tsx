@@ -27,7 +27,7 @@ export const UserImage = ({
 
   return (
     <div
-      className="container relative mx-auto overflow-hidden"
+      className="container relative mx-auto overflow-hidden -z-50"
       style={{
         height: `${height}rem`,
         width: `${width}rem`,
