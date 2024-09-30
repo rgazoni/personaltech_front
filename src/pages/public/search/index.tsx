@@ -405,6 +405,8 @@ export const Search = () => {
                 {pages.map((trainer) => (
                   <ProfilePersonalCard key={trainer.url} page={trainer} />
                 ))}
+                {/* 
+                ----- Pagination ------
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
@@ -421,6 +423,7 @@ export const Search = () => {
                     </PaginationItem>
                   </PaginationContent>
                 </Pagination>
+                */}
               </>
             )}
           </div>
